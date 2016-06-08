@@ -1,0 +1,19 @@
+package vsue.rpc;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+import vsue.rpc.VSAuctionEventType;
+
+public interface VSAuctionEventHandler extends Remote
+{
+    /**
+     * Notifies the event handler about an auction event.
+     *
+     * @param event The type of the event
+     * @param auction The auction
+     * @throws java.rmi.RemoteException
+     */
+    public void handleEvent(VSAuctionEventType event, VSAuction auction) throws RemoteException;
+
+}

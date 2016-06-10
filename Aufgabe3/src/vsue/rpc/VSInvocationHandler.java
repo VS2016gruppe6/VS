@@ -130,84 +130,61 @@ public class VSInvocationHandler implements InvocationHandler,Serializable {
 		connect=new VSObjectConnection(new VSConnection(socket));	
 		
 		//timeout schedule 50ms
-		TimerTask task=new TimerTask(){	
-			@Override
-			public void run(){	
-				timeout=true;}
-		};
-        timer.scheduleAtFixedRate(task,(long)500,(long)500);
-		//maximal 5 times send and receive
+	
+			//maximal 5 times send and receive
 		for (int i = 0; i < maxNr; i++) {
 			//every time timeout should be inited to false
 			timeout=false;
 			try {
 				senMsg = new VSSenMsg(remote.getObjectID(),method.toGenericString(), toSend, requestId++,i);
 				connect.sendObject(senMsg);
-				
 				System.out.println("send message ");
 			} catch (Exception e) {
 				System.out.println("unable to send proxy in invocationhandler involke!");
 			}
-			
-				System.out.println("timeout ist "+timeout);
+				//System.out.println("timeout ist "+timeout);
+
+				int runouttime = 0;
 			while (!timeout) {
 				try {
 					// antwort empfangen
-					 socket.setSoTimeout(socketTimeout);
+					socket.setSoTimeout(socketTimeout- runouttime);
 					revMsg = (VSRevMsg) connect.receiveObject();
-					
-					if (revMsg == null){
-						//System.out.println("client receive ist null");
-						}else{
-							System.out.println("client receive ist not null");
-					// antwort comes before timeout
-					// latest antwort comes,return
-					if (revMsg.getRequestID() == this.requestId && revMsg.getSequenzNr() == i) {
-						
-						//get latest reponse ,close timer
-						task.cancel();
-						
-						System.out.println("+++++++get right response+++++++");
-						
+					runouttime = (int)System.currentTimeMillis();
+//					if (revMsg == null){
+//						//System.out.println("client receive ist null");
+//						}else{
+//							System.out.println("client receive ist not null");
+//					// antwort comes before timeout
+//					// latest antwort comes,return
+					if (revMsg.getRequestID() == this.requestId && revMsg.getSequenzNr() == i) {	
+								timeout = true;
+								System.out.println("+++++++get right response+++++++");
 						Throwable exc = revMsg.getFehler();
 						if (exc != null) {
 							Type[] allowedexceptiontypescollection = method
 									.getGenericExceptionTypes();
 							for (Type singleallowedexception : allowedexceptiontypescollection) {
-								if (((Class<?>) singleallowedexception)
-										.isAssignableFrom(exc.getClass())) {
+								if (((Class<?>) singleallowedexception).isAssignableFrom(exc.getClass())) {
 									throw exc;
 								}
 							}
 						}
 						return revMsg.getResult();
 					} 
-						}
 					// not latest antwort,receive until timeout and next request
 				} catch (SocketTimeoutException e) {
-					System.out.println("request"+" "+requestId+" "+"timeout"+" "+i);
-				//	e.printStackTrace();
-					//timeout = true;//timeout flag set to true				
+					System.out.println("request"+" "+requestId+" "+"timeout"+" "+i);			
 					continue;
 				}catch(Exception e){
 					System.out.println("something wrong"+i);
 				}
 			}
-			System.out.println("ausser while schleife"+" "+i);
-			//if receive latest reponse then break		
-			 if(getResponse==true){
-				 break;
-			 }
+			System.out.println("ausser while schleife ");
 		}
-
-		// }//
-
-		// handler.cancel();//
-		// timer.cancel();//
-
 		 System.out.println("can run before revMsg.getResult()");
 		return revMsg.getResult();
-		//timer.cancel();
+
 		//throw new RemoteException("no answer get ");
 	}
 }

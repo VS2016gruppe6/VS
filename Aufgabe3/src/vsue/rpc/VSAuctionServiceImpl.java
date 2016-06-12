@@ -13,26 +13,23 @@ import javax.swing.text.html.parser.Element;
 public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 
 	Timer timer;
-
+	VSAuctionEventHandler winner;
 	// Create Data Space for Object Auction
 	private ArrayList<VSAuction> storeVSAuction = new ArrayList<>();
 
 	@Override
 	public void registerAuction (VSAuction auction, int duration,VSAuctionEventHandler handler) throws VSAuctionException,RemoteException {
 		final VSAuctionEventHandler _handler = handler;
-		final VSAuction user = new VSAuction(auction.getName(),
-				auction.getPrice(), duration);
-
+		final VSAuction user = new VSAuction(auction.getName(),auction.getPrice(), duration);
 		timer = new Timer();
+		winner = handler;
 		// timer.schedule(new Durationtask(), 1000 * duration);
 		if (duration < 0) {
 			throw new VSAuctionException("Duration is negative");
 		}
-
 		if (containAuction(user.getName()) == true) {
 			throw new VSAuctionException("auction exists already");
 		}
-
 		storeVSAuction.add(user);
 		timer.schedule(new TimerTask() {
 			@Override
@@ -40,7 +37,7 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 
 				try {
 				
-					_handler.handleEvent(VSAuctionEventType.AUCTION_END,user);
+					winner.handleEvent(VSAuctionEventType.AUCTION_END,user);
 
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -89,7 +86,8 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 		for (VSAuction element : storeVSAuction) {
 			if (element.getName().equals(auctionName)) {
 				if (price >= element.price) {
-					handler.handleEvent(VSAuctionEventType.HIGHER_BID, element);
+					winner = handler;
+					winner.handleEvent(VSAuctionEventType.HIGHER_BID, element);
 					element.setPrice(price);
 					element.setHighstBid(userName);
 					return false;

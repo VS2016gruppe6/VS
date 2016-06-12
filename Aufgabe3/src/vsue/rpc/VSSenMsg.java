@@ -9,41 +9,25 @@ import java.rmi.Remote;
 
 public class VSSenMsg implements Serializable{
 	
-	private int objectID;
 	private String method;
 	private Object[] args;
-	
 	private int requestID;
 	private int sequenzNr;
-	
+	private int ObjectID;
 	//private Remote auctionService; ///fuer Rueckruf
 	
-	public VSSenMsg(int objectID,String method,Object[] args,int requestID,int sequenzNr){//Remote auctionService
+	public VSSenMsg(int ObjectID,String method,Object[] args,int requestID,int sequenzNr){//Remote auctionService
 		
-		this.objectID=objectID;
 		this.method=method;
 		this.args=args;
 		this.requestID=requestID;
 		this.sequenzNr=sequenzNr;
-		
+		this.ObjectID= ObjectID;
 	//	this.auctionService=auctionService;
 	}
-	
-//	public VSSenMsg(VSSenMsg senMsg){
-//		
-//		//VSSenMsg(senMsg.objectID,senMsg.method,senMsg.args);
-//		
-//		this.objectID=senMsg.objectID;
-//		this.method=senMsg.method;
-//		this.args=senMsg.args;
-		
-	//	this.auctionService=senMsg.auctionService;
-	//}
-	
 	public int getObjectID(){
-		return objectID;
+		return ObjectID;
 	}
-	
 	public String getMethodName(){
 		return method;
 	}
@@ -59,12 +43,4 @@ public class VSSenMsg implements Serializable{
 	public int getSequenzNr(){
 		return sequenzNr;
 	}
-	
-//	public static void setSenMsg(int objectID,String method,Object[] args){//,Remote auctoniService VSSenMsg senMsg
-//		senMsg.objectID=objectID;
-//		senMsg.method=method;
-//		senMsg.args=args;
-//		
-	//	senMsg.auctionService=auctoniService;
-		
 }

@@ -6,12 +6,11 @@ public class VSRevMsg implements Serializable{
 
 	private Object result;
 	private Throwable fehler;
-	
 	private int requestID;
 	private int sequenzNr;
 	
 	
-	public VSRevMsg(Object result,Throwable fehler,int requestNr,int sequenzNr){//,VSRemoteReference remoteReference
+	public VSRevMsg(Object result,Throwable fehler,int requestID,int sequenzNr){//,VSRemoteReference remoteReference
 		
 		this.result=result;
 		this.fehler = fehler;

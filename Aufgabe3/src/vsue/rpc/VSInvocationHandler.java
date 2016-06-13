@@ -109,7 +109,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				}
 			}
 		}
-		A:for (int i = 0; i < maxNr; i++) {//i < maxNr
+		A:for (int i = 0; i < maxNr; i++) {
 			try {
 				senMsg = new VSSenMsg(remote.getObjectID(), method.toGenericString(), toSend, requestId, i);
 				connect.sendObject(senMsg);

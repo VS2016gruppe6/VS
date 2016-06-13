@@ -16,7 +16,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 
 	static final private int maxNr = 5;
 	private int requestId = 0;
-	private int socketTimeout = 5000;
+	private int socketTimeout = 500;
 
 	// private static class requests{
 	// public VSInvocationHandler handler;
@@ -113,7 +113,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 			try {
 				senMsg = new VSSenMsg(remote.getObjectID(), method.toGenericString(), toSend, requestId, i);
 				connect.sendObject(senMsg);
-				System.out.println("send message ");
+				//System.out.println("send message ");
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("unable to send proxy in invocationhandler involke!");
@@ -130,9 +130,10 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 						revMsg = (VSRevMsg) connect.receiveObject();
 						recvend = System.currentTimeMillis();
 						System.out.println("recvend = " + recvend);
-						runouttime = Math.toIntExact(recvend - recvbegin);
+						runouttime = (int)(recvend - recvbegin);
 						System.out.println("runouttime = " + runouttime);
 						resttime -= runouttime;
+						System.out.println("resttime is " + resttime);
 						if (resttime <= 0) {
 							continue A;
 						}
@@ -143,12 +144,20 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 						System.out.println("get right answer for requestID "+requestId+" at " + i+" SequenzNr");
 						break;
 				}catch (SocketTimeoutException e) {
+					recvend = System.currentTimeMillis();
+					System.out.println("sockettimeout at " + recvend);
+					runouttime = (int)(recvend - recvbegin);
+					System.out.println("runouttime = " + runouttime);
+					resttime -= runouttime;
+					System.out.println("resttime is " + resttime);
+					if (resttime <= 0) {
+						continue A;
+					}
 					System.out.println("request" + " " + requestId + " " + "timeout" + " " + i);
 					continue;
 				}catch (Exception e) {
 					System.out.println("something wrong" + i);
 					System.out.println(e.getMessage());
-					break;
 				}
 			}
 			break;

@@ -13,9 +13,8 @@ import java.net.SocketTimeoutException;
 public class VSConnection{
 	
 	private Socket socket;
-	private final int timeout=10;
 	private OutputStream out = null;
-	private InputStream in=null;
+	private InputStream in = null;
 	
 	
 	public VSConnection(Socket socket){
@@ -48,9 +47,7 @@ public class VSConnection{
 				grosse=grosse>>8;
 			//}
 			}
-			out.write(chunk);
-			
-			
+			out.write(chunk);	
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -59,15 +56,11 @@ public class VSConnection{
 	 
 	public byte[] receiveChunk() throws IOException,SocketTimeoutException{
 		
-		byte[] chunk=null;
-		
-			
+		byte[] chunk=null;	
 	       if(in!=null){ 
 	    	   int grosse=(in.read())|(in.read()<<8)|(in.read()<<16)|(in.read()<<24);
 	    	   if(grosse>=0){
 				chunk=new byte[grosse];
-				
-			
 				in.read(chunk);              //grosse datenmenge?
 	    	   }
 	       }

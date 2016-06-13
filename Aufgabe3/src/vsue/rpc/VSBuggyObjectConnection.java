@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 public class VSBuggyObjectConnection extends VSObjectConnection{
 	private int i = 0;
+	private int time = 800;
 	public VSBuggyObjectConnection(VSConnection connect) {
 		super(connect);
 	}
@@ -13,19 +14,19 @@ public class VSBuggyObjectConnection extends VSObjectConnection{
 		i++;
 		System.out.println("i = "+i);	
 	if(i % 2 == 0){
-		System.out.println("don't send object this time");
-		return;
-	}
-	else{
 		try {
-			Thread.sleep(200);
+			Thread.sleep(time);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			System.err.println("unable to threadsleep");
 			System.out.println(e.getMessage());
 		}
-		System.out.println("send object after 200 thread sleep");
+		System.out.println("send object after "+time+" thread sleep");
 		super.sendObject(object);
+	}
+	else{
+		System.out.println("don't send object this time");
+		return;
 	}
 }
 }

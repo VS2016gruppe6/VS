@@ -14,17 +14,32 @@ public class VSConnection{
 	
 	private Socket socket;
 	private final int timeout=10;
+	private OutputStream out = null;
+	private InputStream in=null;
 	
 	
 	public VSConnection(Socket socket){
-		
+	
 		this.socket=socket;
+		try {
+			out=socket.getOutputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			in=socket.getInputStream();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void sendChunk(byte[] chunk)  {
 		
 		try {
-			OutputStream out=socket.getOutputStream();
+			//OutputStream out=socket.getOutputStream();
 			int grosse=chunk.length;
 			//while(grosse>0){
 			//low digits first
@@ -45,12 +60,9 @@ public class VSConnection{
 	public byte[] receiveChunk() throws IOException,SocketTimeoutException{
 		
 		byte[] chunk=null;
-		InputStream in=null;
-	
-		in=socket.getInputStream();
+		
 			
 	       if(in!=null){ 
-	    	  socket.setSoTimeout(timeout);
 	    	   int grosse=(in.read())|(in.read()<<8)|(in.read()<<16)|(in.read()<<24);
 	    	   if(grosse>=0){
 				chunk=new byte[grosse];

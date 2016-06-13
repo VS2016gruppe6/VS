@@ -16,7 +16,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 
 	static final private int maxNr = 5;
 	private int requestId = 0;
-	private int socketTimeout = 500;
+	private int socketTimeout = 5000;
 
 	// private static class requests{
 	// public VSInvocationHandler handler;
@@ -93,10 +93,10 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 		// every time requestId add 1
 		requestId++;
 		Socket socket = null;
+		socket = new Socket(remote.getHost(), remote.getPort());
 		VSBuggyObjectConnection connect = new VSBuggyObjectConnection(new VSConnection(socket));;
 		VSRevMsg revMsg = null;
 		VSSenMsg senMsg = null;
-		socket = new Socket(remote.getHost(), remote.getPort());
 		Object[] toSend;
 		if (args == null) {
 			toSend = new Object[0];
@@ -115,7 +115,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				connect.sendObject(senMsg);
 				System.out.println("send message ");
 			} catch (Exception e) {
-				System.err.println(e.getMessage());
+				e.printStackTrace();
 				System.out.println("unable to send proxy in invocationhandler involke!");
 			}
 			int runouttime = 0;

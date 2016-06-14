@@ -25,14 +25,13 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 	@SuppressWarnings("resource")
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
-		// every time requestId add 1
-		int runouttime = 0;
-		long recvbegin = 0;
-		long recvend = 0;
+		
+		long t_begin = 0;   //time for test begin
+		long runTime= 0;
 		int resttime = socketTimeout; 
 		
 		// init
-		requestId++;
+		requestId++;   // every time requestId add 1
 		Socket socket = null;
 		socket = new Socket(remote.getHost(), remote.getPort()); // socker init
 		VSBuggyObjectConnection connect = new VSBuggyObjectConnection(
@@ -57,34 +56,35 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 		for (int i = 0; i < maxNr; i++) { 
 			try {
 				senMsg = new VSSenMsg(remote.getObjectID(),method.toGenericString(), toSend, requestId, i);
-				connect.sendObject(senMsg);
+								
+				t_begin = System.currentTimeMillis();     //begin				
+				connect.sendObject(senMsg);				//2500
+				System.out.println("recvbegin = " + t_begin);
+				
 				// System.out.println("send message ");
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.out.println("unable to send proxy in invocationhandler involke!");
 			}
-			runouttime = 0;
-			recvbegin = 0;
-			recvend = 0;
 			
+			resttime =  socketTimeout;
 			while(resttime > 0) {
 				try {
 					// antwort empfangen
-					socket.setSoTimeout(resttime); 
-					
-					//receieve object, get duration time
-					recvbegin = System.currentTimeMillis();     //begin
-					System.out.println("recvbegin = " + recvbegin);
+					socket.setSoTimeout(resttime);
+					System.out.println("start receive"); 
 					revMsg = (VSRevMsg) connect.receiveObject();
-					recvend = System.currentTimeMillis();      //end
-					System.out.println("recvend = " + recvend);    
 					
-					runouttime = (int) (recvend - recvbegin);  
-					System.out.println("runouttime = " + runouttime);
-					resttime -= runouttime;
+					//test time
+					runTime = System.currentTimeMillis()-t_begin ;      //end
+					resttime = (int) (socketTimeout-runTime);
+					
+					//for test
+					System.out.println("runTime = " + runTime);     
 					System.out.println("resttime is " + resttime);
+					
 					if (resttime <= 0) {
-						socket.setSoTimeout(0);   //socket close?
+						socket.setSoTimeout(0);   //redunance
 						break;
 					}
 					// latest antwort comes,return
@@ -116,11 +116,11 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 												// until timeout and next
 												// request
 				} catch (SocketTimeoutException e) {
-					recvend = System.currentTimeMillis();
-					runouttime = (int) (recvend - recvbegin);
-					System.out.println("runouttime = " + runouttime);
+					runTime = System.currentTimeMillis()-t_begin;
+					System.out.println("SocketTimeoutException  = " + runTime);
 					System.out.println("request" + " " + requestId + " "
 							+ "timeout" + " " + i);
+					socket.setSoTimeout(0);
 					break;
 				} catch (Exception e) {
 					System.out.println("something wrong" + i);

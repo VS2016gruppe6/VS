@@ -22,34 +22,25 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 		i = Math.random();   //[0.0, 1.0]
 		long tmp_time = (long) (Math.random() * (double) time);
 		System.out.println("i = " + i);
-		if (i <= 0.70) {
+		if (i <= 0.70) {									//send object this time normal	
 			System.out.println("send object this time normal");
 			super.sendObject(_object);
-		} else if (i > 0.7 && i <= 0.85) {
+		} else if (i > 0.7 && i <= 0.85) {     
 			System.out.println("send object after " + tmp_time
 					+ " thread sleep");
 			try {
 				VSObjectConnection vsconnect = new VSObjectConnection(connect);
+				long sleepBegin = System.currentTimeMillis();     //begin
 				Thread.sleep(tmp_time);
+				long b = System.currentTimeMillis();     //begin
+
+				System.out.println("sleepTime= " + (b -sleepBegin));
+							
 				vsconnect.sendObject(_object);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// Timer timer = new Timer();
-			// timer.schedule(new TimerTask() {
-			// @Override
-			// public void run() {
-			// VSObjectConnection vsconnect = new VSObjectConnection(connect);
-			// try {
-			// vsconnect.sendObject(_object);
-			// this.cancel();
-			// } catch (IOException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// }
-			// }, time);
 
 		} else if (i > 0.85 && i <= 0.9) {
 			System.out.println("don't send object this time");
@@ -64,14 +55,6 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// Timer timer = new Timer();
-			// timer.schedule(new TimerTask() {
-			// @Override
-			// public void run() {
-			// return;
-			// }
-			// }, time);
-
 		}
 	}
 }

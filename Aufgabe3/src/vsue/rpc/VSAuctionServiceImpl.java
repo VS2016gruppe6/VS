@@ -1,6 +1,5 @@
 package vsue.rpc;
 
-
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -10,7 +9,8 @@ import java.util.TimerTask;
 
 import javax.swing.text.html.parser.Element;
 
-public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
+public class VSAuctionServiceImpl implements VSAuctionService {// add
+																// Serializable
 
 	Timer timer;
 	VSAuctionEventHandler winner;
@@ -18,9 +18,10 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 	private ArrayList<VSAuction> storeVSAuction = new ArrayList<>();
 
 	@Override
-	public void registerAuction (VSAuction auction, int duration,VSAuctionEventHandler handler) throws VSAuctionException,RemoteException {
+	public void registerAuction(VSAuction auction, int duration, VSAuctionEventHandler handler)
+			throws VSAuctionException, RemoteException {
 		final VSAuctionEventHandler _handler = handler;
-		final VSAuction user = new VSAuction(auction.getName(),auction.getPrice(), duration);
+		final VSAuction user = new VSAuction(auction.getName(), auction.getPrice(), duration);
 		timer = new Timer();
 		winner = handler;
 		// timer.schedule(new Durationtask(), 1000 * duration);
@@ -36,8 +37,8 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 			public void run() {
 
 				try {
-				
-					winner.handleEvent(VSAuctionEventType.AUCTION_END,user);
+
+					winner.handleEvent(VSAuctionEventType.AUCTION_END, user);
 
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
@@ -47,7 +48,6 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 			}
 		}, duration * 1000);
 
-		
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 	}
 
 	// auction exists or not
-	public boolean containAuction(String auctionName) throws RemoteException  {
+	public boolean containAuction(String auctionName) throws RemoteException {
 
 		VSAuction[] aktiveVSAuction = this.getAuctions();
 		for (VSAuction element : aktiveVSAuction) {
@@ -80,9 +80,8 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 	}
 
 	@Override
-	public boolean placeBid(String userName, String auctionName, int price,
-			VSAuctionEventHandler handler) throws VSAuctionException,
-			RemoteException {
+	public boolean placeBid(String userName, String auctionName, int price, VSAuctionEventHandler handler)
+			throws VSAuctionException, RemoteException {
 		for (VSAuction element : storeVSAuction) {
 			if (element.getName().equals(auctionName)) {
 				if (price >= element.price) {
@@ -92,8 +91,8 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 					element.setHighstBid(userName);
 					return false;
 				} else {
-//					element.setPrice(price);
-//					element.setHighstBid(userName);
+					// element.setPrice(price);
+					// element.setHighstBid(userName);
 					return true;
 				}
 			}

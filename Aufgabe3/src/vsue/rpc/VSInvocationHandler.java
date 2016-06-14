@@ -126,10 +126,10 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					// antwort empfangen
 						socket.setSoTimeout(resttime);
 						recvbegin =  System.currentTimeMillis();
-//						System.out.println("recvbegin = " + recvbegin);
+						System.out.println("recvbegin = " + recvbegin);
 						revMsg = (VSRevMsg) connect.receiveObject();
 						recvend = System.currentTimeMillis();
-//						System.out.println("recvend = " + recvend);
+						System.out.println("recvend = " + recvend);
 						runouttime = (int)(recvend - recvbegin);
 						System.out.println("runouttime = " + runouttime);
 						resttime -= runouttime;
@@ -145,10 +145,10 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 						}
 						System.out.println("got right answer for requestID "+requestId+" at " + i+" SequenzNr");
 						
-						if(revMsg == null){
-							 throw new RemoteException("unable to get response ");
-						}
-						
+//						if(revMsg == null){
+//							 throw new RemoteException("unable to get response ");
+//						}
+//						
 						socket.setSoTimeout(0);
 						//System.out.println("+++++++get right response+++++++");
 						Throwable exc = revMsg.getFehler();
@@ -162,6 +162,9 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 						}
 						return revMsg.getResult();// not latest antwort,receive until timeout and next request
 				}catch (SocketTimeoutException e) {
+					recvend = System.currentTimeMillis();
+					runouttime = (int)(recvend - recvbegin);
+					System.out.println("runouttime = " + runouttime);
 					System.out.println("request" + " " + requestId + " " + "timeout" + " " + i);
 					break;
 				}catch (Exception e) {

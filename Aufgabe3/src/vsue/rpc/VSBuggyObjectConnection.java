@@ -27,7 +27,9 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 	else if(i > 0.7 && i <= 0.85){
 		System.out.println("send object after "+tmp_time+" thread sleep");
 		try {
-			Thread.sleep((long)Math.random() * time);
+			VSObjectConnection vsconnect = new VSObjectConnection(connect);
+			Thread.sleep(tmp_time);
+			vsconnect.sendObject(_object);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -56,6 +58,7 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 		System.out.println("don't send object after "+tmp_time+" thread sleep");
 		try {
 			Thread.sleep(tmp_time);
+			return;
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

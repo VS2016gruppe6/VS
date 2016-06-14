@@ -16,7 +16,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.security.Provider.Service;
 
-public class VSAuctionClient implements VSAuctionEventHandler {
+
+public class VSAuctionClient implements VSAuctionEventHandler{
 	/* The user name provided via command line. */
 	private final String userName;
 
@@ -33,24 +34,25 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		/*
 		 * TODO: Implement client startup code
 		 */
-
+		
 		Registry registry = null;
-
-		// VSAuctionClient client=(VSAuctionClient)
+		
+		//VSAuctionClient client=(VSAuctionClient)
 		try {
 			VSRemoteObjectManager.getInstance().exportObject(this);
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		} /// changed
-
+		}///changed
+		
 		try {
-			registry = LocateRegistry.getRegistry(registryHost, registryPort);
+			registry = LocateRegistry.getRegistry(registryHost,registryPort);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	
+		
 		try {
 			service = (VSAuctionService) registry.lookup("service");
 		} catch (AccessException e) {
@@ -63,7 +65,7 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		
 	}
 
 	public void shutdown() {
@@ -84,11 +86,12 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		switch (event) {
 
 		case AUCTION_END:
-			System.out.println("auction" + auction.getName() + " is end");
+			System.out.println("auction"+auction.getName()+" is end");
 
 		case AUCTION_WON:
 			if (auction.highstBid != null) {
-				System.out.println("winner ist " + auction.highstBid + " with Price:" + auction.price);
+				System.out.println("winner ist " + auction.highstBid
+						+ " with Price:" + auction.price );
 			} else {
 
 				System.out.println("you win!");
@@ -112,14 +115,14 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		/*
 		 * TODO: Register auction
 		 */
-		// System.out.println("register!");
+		//System.out.println("register!");
 
 		VSAuction auction = new VSAuction(auctionName, startingPrice, duration);
 
 		// System.out.println("auction!");
 
 		try {
-			service.registerAuction(auction, duration, this);
+			service.registerAuction(auction, duration,this);
 		} catch (VSAuctionException e) {
 			// TODO Auto-generated catch block
 			System.err.println(e.getMessage());
@@ -156,7 +159,7 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		 */
 
 		try {
-			service.placeBid(userName, auctionName, price, this);
+			service.placeBid(userName, auctionName, price,this);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -172,7 +175,8 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 	// #########
 	public void shell() {
 		// Create input reader and process commands
-		BufferedReader commandLine = new BufferedReader(new InputStreamReader(System.in));
+		BufferedReader commandLine = new BufferedReader(new InputStreamReader(
+				System.in));
 		while (true) {
 			// Print prompt
 			System.out.print("> ");
@@ -220,9 +224,11 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		case "register":
 		case "r":
 			if (args.length < 3)
-				throw new IllegalArgumentException("Usage: register <auction-name> <duration> [<starting-price>]");
+				throw new IllegalArgumentException(
+						"Usage: register <auction-name> <duration> [<starting-price>]");
 			int duration = Integer.parseInt(args[2]);
-			int startingPrice = (args.length > 3) ? Integer.parseInt(args[3]) : 0;
+			int startingPrice = (args.length > 3) ? Integer.parseInt(args[3])
+					: 0;
 			register(args[1], duration, startingPrice);
 			break;
 		case "list":
@@ -232,7 +238,8 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		case "bid":
 		case "b":
 			if (args.length < 3)
-				throw new IllegalArgumentException("Usage: bid <auction-name> <price>");
+				throw new IllegalArgumentException(
+						"Usage: bid <auction-name> <price>");
 			int price = Integer.parseInt(args[2]);
 			bid(args[1], price);
 			break;
@@ -253,8 +260,9 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 	public static void main(String[] args) {
 		// Check arguments
 		if (args.length < 3) {
-			System.err.println(
-					"usage: java " + VSAuctionClient.class.getName() + " <user-name> <registry_host> <registry_port>");
+			System.err.println("usage: java "
+					+ VSAuctionClient.class.getName()
+					+ " <user-name> <registry_host> <registry_port>");
 			System.exit(1);
 		}
 
@@ -262,9 +270,9 @@ public class VSAuctionClient implements VSAuctionEventHandler {
 		VSAuctionClient client = new VSAuctionClient(args[0]);
 		client.init(args[1], Integer.parseInt(args[2]));
 		client.shell();
-
-		// client.register("a",100,80);
-
+		
+		//client.register("a",100,80);
+		
 		client.shutdown();
 	}
 

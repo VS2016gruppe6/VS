@@ -2,7 +2,7 @@ package vsue.rpc;
 
 import java.io.Serializable;
 
-public class VSRevMsg implements Serializable{    
+public class VSRevMsg implements Serializable{
 
 	private Object result;
 	private Throwable fehler;
@@ -30,6 +30,10 @@ public class VSRevMsg implements Serializable{
 	public Throwable getFehler(){
 		return fehler;
 	}
+	
+//	public VSRemoteReference getRemoteReference(){
+//		return remoteReference;
+//	}
 	
 	public Object getResult(){
 		return result;

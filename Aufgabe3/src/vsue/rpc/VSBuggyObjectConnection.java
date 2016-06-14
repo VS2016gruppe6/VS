@@ -6,7 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class VSBuggyObjectConnection extends VSObjectConnection {
-	private int i = 0;
+	private double i = 0.0;
 	private int time = 400;
 	VSConnection connect;
 	public VSBuggyObjectConnection(VSConnection connect) {
@@ -17,9 +17,13 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 	//override
 	public void sendObject(Serializable object) throws IOException{
 		final Serializable _object = object;
-		i++;
-		System.out.println("i = "+i);	
-	if(i % 3 == 0){
+		i = Math.random();
+		System.out.println("i = "+i);
+	if(i <= 0.25){
+		System.out.println("send object this time normal");
+		super.sendObject(_object);
+	}
+	else if(i > 0.25 && i <= 0.5){
 		System.out.println("send object after "+time+" thread sleep");
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {
@@ -37,11 +41,11 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 		}, time);
 		
 	}
-	else if (i%3 == 1){
+	else if (i > 0.5 && i <= 0.75){
 		System.out.println("don't send object this time");
 		return;
 	}
-	else if (i%3 == 2){
+	else if (i > 0.75 && i <= 1.0){
 		System.out.println("don't send object after "+time+"thread sleep");
 		Timer timer = new Timer();
 		timer.schedule(new TimerTask() {

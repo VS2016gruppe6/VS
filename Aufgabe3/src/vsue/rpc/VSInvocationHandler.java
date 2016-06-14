@@ -14,7 +14,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 
 	private VSRemoteReference remote; /// remoteReference
 
-	static final private int maxNr = 5;
+	static final private int maxNr = 10;
 	private int requestId = 0;
 	private int socketTimeout = 500;
 
@@ -126,10 +126,10 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					// antwort empfangen
 						socket.setSoTimeout(resttime);
 						recvbegin =  System.currentTimeMillis();
-						System.out.println("recvbegin = " + recvbegin);
+//						System.out.println("recvbegin = " + recvbegin);
 						revMsg = (VSRevMsg) connect.receiveObject();
 						recvend = System.currentTimeMillis();
-						System.out.println("recvend = " + recvend);
+//						System.out.println("recvend = " + recvend);
 						runouttime = (int)(recvend - recvbegin);
 						System.out.println("runouttime = " + runouttime);
 						resttime -= runouttime;

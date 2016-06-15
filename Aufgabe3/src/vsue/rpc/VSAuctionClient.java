@@ -86,7 +86,7 @@ public class VSAuctionClient implements VSAuctionEventHandler{
 		switch (event) {
 
 		case AUCTION_END:
-			System.out.println("auction"+auction.getName()+" is end");
+			System.out.println("auction "+auction.getName()+" is end");
 
 		case AUCTION_WON:
 			if (auction.highstBid != null) {

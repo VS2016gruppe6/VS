@@ -20,6 +20,7 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 	public void sendObject(Serializable object) throws IOException {
 		final Serializable _object = object;   //?  
 		i = Math.random();   //[0.0, 1.0]
+		i = 0.8;
 		long tmp_time = (long) (Math.random() * (double) time);
 		System.out.println("i = " + i);
 		if (i <= 0.70) {									//send object this time normal	
@@ -34,9 +35,10 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 				Thread.sleep(tmp_time);
 				long b = System.currentTimeMillis();     //begin
 
-				System.out.println("sleepTime= " + (b -sleepBegin));
+			//	System.out.println("sleepTime= " + (b -sleepBegin));
 							
 				vsconnect.sendObject(_object);
+				
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

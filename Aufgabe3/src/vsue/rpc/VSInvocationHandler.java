@@ -110,12 +110,6 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 						break;
 					}
 					
-					
-
-					// if(revMsg == null){
-					// throw new RemoteException("unable to get response ");
-					// }
-					//
 					socket.setSoTimeout(0);
 	
 					Throwable exc = revMsg.getFehler();
@@ -129,7 +123,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 							}
 						}
 					}
-					socket.close();
+					//socket.close();
 					return revMsg.getResult();// not latest antwort,receive
 												// until timeout and next
 												// request
@@ -149,7 +143,6 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				}
 			}
 		}
-
 		throw new RemoteException("Max retries reached.");
 	}
 }

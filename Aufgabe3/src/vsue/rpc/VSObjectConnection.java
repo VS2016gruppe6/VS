@@ -29,8 +29,7 @@ public class VSObjectConnection {
 			object_stream.writeObject(object);
 			object_stream.flush();    //gibt buffer
 			byteSend=stream_byteArray.toByteArray();
-			//System.out.println("byteSend are " + byteSend);
-			//System.out.println("run before sendChunk successfully");
+
 			connect.sendChunk(byteSend);
 			//System.out.println("sendChunk successfully");
 			

@@ -70,7 +70,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				BOCThread[i]=new VSBOCThread(i,senMsg,connect);
 				BOCThread[i].start();
 							
-				System.out.println("recvbegin time = " + t_begin);
+//				System.out.println("recvbegin time = " + t_begin);
 				
 				// System.out.println("send message ");
 			} catch (Exception e) {
@@ -92,8 +92,8 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					resttime = (int) (socketTimeout-runTime);
 					
 					//for test
-					System.out.println("runTime = " + runTime);     
-					System.out.println("resttime is " + resttime);
+//					System.out.println("runTime = " + runTime);     
+//					System.out.println("resttime is " + resttime);
 					
 					if (resttime <= 0) {
 						socket.setSoTimeout(0);   //redunance

@@ -13,14 +13,11 @@ public class VSBuggyObjectConnection extends VSObjectConnection {
 	public VSBuggyObjectConnection(VSConnection connect) {
 		super(connect);
 		this.connect = connect;
-
 	}
-
 	// override
 	public void sendObject(Serializable object) throws IOException {
 		final Serializable _object = object;   //?  
 		i = Math.random();   //[0.0, 1.0]
-		i = 0.8;
 		long tmp_time = (long) (Math.random() * (double) time);
 		System.out.println("i = " + i);
 		if (i <= 0.70) {									//send object this time normal	

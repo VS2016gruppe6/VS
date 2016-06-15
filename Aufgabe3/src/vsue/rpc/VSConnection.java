@@ -61,8 +61,15 @@ public class VSConnection{
 	    	   int grosse=(in.read())|(in.read()<<8)|(in.read()<<16)|(in.read()<<24);
 	    	   if(grosse>=0){
 				chunk=new byte[grosse];
-				in.read(chunk);              //grosse datenmenge?
+				int bytes_read = 0;
+				for (int i = 0; i < grosse;) {
+					bytes_read += in.read(chunk, i, grosse - i);
+					if (bytes_read < 0) return null;
+					i += bytes_read;
+				}
 	    	   }
+	       } else {
+	    	   System.out.println("in null");
 	       }
 //	       if (chunk == null)
 //	       System.out.println("null");

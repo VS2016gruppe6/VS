@@ -25,10 +25,9 @@ public class VSServer implements Runnable {
 						VSSenMsg senMsg;
 						senMsg=(VSSenMsg)connect.receiveObject();
 						
-						if(senMsg==null){
-							System.out.println("server doesn't receive");
-							System.out.println("server doesn't receive");
-						}
+//						if(senMsg==null){
+//							System.out.println("server doesn't receive");
+//						}
 						VSRevMsg revMsg;
 						try
 						{

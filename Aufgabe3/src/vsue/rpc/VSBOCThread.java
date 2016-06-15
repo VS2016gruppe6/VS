@@ -14,13 +14,7 @@ public class VSBOCThread extends Thread {
 		this.object = object;
 		this.connect = connect;
 	}
-	
-	public void ThreadInit(int Thread_ID,VSSenMsg object,VSConnection connect){
-		this.Thread_ID = Thread_ID;
-		this.object = object;
-		this.connect = connect;
-	}
-	
+		
 	public void run(){
 		
 		VSBuggyObjectConnection BOC = new VSBuggyObjectConnection(connect);

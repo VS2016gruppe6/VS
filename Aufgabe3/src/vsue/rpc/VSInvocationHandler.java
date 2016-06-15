@@ -23,12 +23,9 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 
 	// fuell alle lokalen aufrufe am Proxy
 	@SuppressWarnings("resource")
-<<<<<<< HEAD
+
 	public Object invoke(Object proxy, Method method, Object[] args)throws Throwable {
-=======
-	public Object invoke(Object proxy, Method method, Object[] args)
-			throws Throwable {
->>>>>>> origin/master
+
 		
 		long t_begin = 0;   //time for test begin
 		long runTime= 0;
@@ -38,20 +35,11 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 		requestId++;   // every time requestId add 1
 		Socket socket = null;
 		socket = new Socket(remote.getHost(), remote.getPort()); // socker init
-<<<<<<< HEAD
-		
-		//-------------------------------------- Code quoted 15.06 12:06
-		//VSBuggyObjectConnection connect = new VSBuggyObjectConnection(new VSConnection(socket));
-		
-		//-------------------------------------- Code added 15.06 12:06
+
+
 		VSConnection connect = new VSConnection(socket);
 		VSObjectConnection ObjConnect = new VSObjectConnection(connect);
-		//-----------------------------------
-		
-=======
-		VSBuggyObjectConnection connect = new VSBuggyObjectConnection(
-				new VSConnection(socket));
->>>>>>> origin/master
+	
 		VSRevMsg revMsg = null;
 		VSSenMsg senMsg = null;
 
@@ -68,36 +56,20 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				}
 			}
 		}
-<<<<<<< HEAD
-		
-			//----------------------------------------- Code added 15.06 12:06
-			VSBOCThread BOCThread[] = new VSBOCThread[maxNr];
-			
-			//-----------------------------------------
-			
-=======
 
->>>>>>> origin/master
+		// init therad array
+		VSBOCThread BOCThread[] = new VSBOCThread[maxNr];
+		
 		for (int i = 0; i < maxNr; i++) { 
 			try {
 				senMsg = new VSSenMsg(remote.getObjectID(),method.toGenericString(), toSend, requestId, i);
-								
-<<<<<<< HEAD
+					
 				t_begin = System.currentTimeMillis();     //begin
 				
-				//-------------------------------------- Code quoted 15.06 12:06
-				//connect.sendObject(senMsg);				//2500
-				
-				//-------------------------------------- Code added 15.06 12:06
+				//send object per thread
 				BOCThread[i]=new VSBOCThread(i,senMsg,connect);
 				BOCThread[i].start();
-				//--------------------------------------
-				
-				
-=======
-				t_begin = System.currentTimeMillis();     //begin				
-				connect.sendObject(senMsg);				//2500
->>>>>>> origin/master
+							
 				System.out.println("recvbegin = " + t_begin);
 				
 				// System.out.println("send message ");
@@ -106,17 +78,14 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				System.out.println("unable to send proxy in invocationhandler involke!");
 			}
 			
-			resttime =  socketTimeout;
+			resttime =  socketTimeout;    
 			while(resttime > 0) {
 				try {
 					// antwort empfangen
 					socket.setSoTimeout(resttime);
 					System.out.println("start receive"); 
-<<<<<<< HEAD
+
 					revMsg = (VSRevMsg) ObjConnect.receiveObject();
-=======
-					revMsg = (VSRevMsg) connect.receiveObject();
->>>>>>> origin/master
 					
 					//test time
 					runTime = System.currentTimeMillis()-t_begin ;      //end
@@ -143,7 +112,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					// }
 					//
 					socket.setSoTimeout(0);
-					// System.out.println("+++++++get right response+++++++");
+	
 					Throwable exc = revMsg.getFehler();
 					if (exc != null) {
 						Type[] allowedexceptiontypescollection = method

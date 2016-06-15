@@ -13,7 +13,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 
 	private VSRemoteReference remote; // / remoteReference
 
-	static final private int maxNr = 10;
+	static final private int maxNr = 5;
 	private int requestId = 0;
 	private int socketTimeout = 2000;
 
@@ -95,17 +95,22 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 //					System.out.println("runTime = " + runTime);     
 //					System.out.println("resttime is " + resttime);
 					
-					if (resttime <= 0) {
-						socket.setSoTimeout(0);   //redunance
-						break;
-					}
+					
 					// latest antwort comes,return
 					if (revMsg == null || !(revMsg.getRequestID() == requestId && revMsg
 									.getSequenzNr() == i)) {
 						System.out.println("Sequenznumm is " + i);
 						continue;
 					}
+					
 					System.out.println("got right answer for requestID "+ requestId + " at " + i + " SequenzNr");
+					
+					if (resttime <= 0) {
+						socket.setSoTimeout(0);   //redunance
+						break;
+					}
+					
+					
 
 					// if(revMsg == null){
 					// throw new RemoteException("unable to get response ");
@@ -124,9 +129,11 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 							}
 						}
 					}
+					socket.close();
 					return revMsg.getResult();// not latest antwort,receive
 												// until timeout and next
 												// request
+					
 				} catch (SocketTimeoutException e) {
 					runTime = System.currentTimeMillis()-t_begin;
 					System.out.println("SocketTimeoutException  = " + runTime);

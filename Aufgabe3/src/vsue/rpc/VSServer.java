@@ -21,7 +21,7 @@ public class VSServer implements Runnable {
 			
 				Object o=null;
 				VSRemoteObjectManager objectManager = VSRemoteObjectManager.getInstance();
-				try {		
+		try {		
 						VSSenMsg senMsg;
 						senMsg=(VSSenMsg)connect.receiveObject();
 						
@@ -42,16 +42,9 @@ public class VSServer implements Runnable {
 						}catch(Exception e){
 							e.printStackTrace();
 						}			        
-		     try {
-				_socket.close();
-			}
-		     catch (SocketTimeoutException e){
-		    	 System.out.println("server receiver ");
-		     }catch (IOException e) {
-				// TODO Auto-generated catch block
-				System.err.println("unable to close socket in thread");
-				System.err.println(e.getMessage());
-			} 
+			
+			
+		
 			}
 
 }

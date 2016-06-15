@@ -33,10 +33,10 @@ public class VSObjectConnection {
 			connect.sendChunk(byteSend);
 			//System.out.println("sendChunk successfully");
 			
-//			if(object_stream!=null){
-//				object_stream.close();
-//				stream_byteArray.close();
-//			}
+			if(object_stream!=null){
+				object_stream.close();
+				stream_byteArray.close();
+			}
 			
 		} catch (IOException e) {
 			System.err.println("error when sendObject");
@@ -54,10 +54,10 @@ public class VSObjectConnection {
 		
 			receive = connect.receiveChunk();
 			if(receive==null){
-				System.out.println(" receive is null");
+			//	System.out.println(" receive is null");
 				return null;
 			}
-			System.out.println(" receive is  not null");
+			//System.out.println(" receive is  not null");
 			byte_stream=new ByteArrayInputStream(receive);
 		
 			stream_object=new ObjectInputStream(byte_stream);

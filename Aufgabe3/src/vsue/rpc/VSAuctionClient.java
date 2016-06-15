@@ -97,9 +97,9 @@ public class VSAuctionClient implements VSAuctionEventHandler{
 				System.out.println("you win!");
 			}
 			break;
-
+			
 		case HIGHER_BID:
-			System.out.println("new higher bid existed");
+			System.out.println("you have highst bid");
 			break;
 
 		default:

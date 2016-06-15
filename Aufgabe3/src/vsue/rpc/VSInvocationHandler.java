@@ -70,7 +70,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				BOCThread[i]=new VSBOCThread(i,senMsg,connect);
 				BOCThread[i].start();
 							
-				System.out.println("recvbegin = " + t_begin);
+				System.out.println("recvbegin time = " + t_begin);
 				
 				// System.out.println("send message ");
 			} catch (Exception e) {

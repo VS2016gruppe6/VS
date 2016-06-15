@@ -36,9 +36,9 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 			public void run() {
 
 				try {
-				
+				     
 					winner.handleEvent(VSAuctionEventType.AUCTION_END,user);
-
+					storeVSAuction.remove(user);
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					System.err.println("unable to call handlerEvent methode");
@@ -46,8 +46,6 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 				}
 			}
 		}, duration * 1000);
-
-		
 	}
 
 	@Override
@@ -55,10 +53,7 @@ public class VSAuctionServiceImpl implements VSAuctionService{//add Serializable
 		VSAuction[] tempVSAuction = new VSAuction[storeVSAuction.size()];
 		int counter = 0;
 		for (VSAuction element : storeVSAuction) {
-			if (element.getDurationflag() == false) { // false :duration don't
-														// run out
-				tempVSAuction[counter++] = element.getVSAuction();
-			}
+			tempVSAuction[counter++] = element.getVSAuction();
 		}
 
 		return tempVSAuction;

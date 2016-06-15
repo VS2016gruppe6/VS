@@ -150,7 +150,6 @@ public class VSAuctionClient implements VSAuctionEventHandler{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 	}
 
 	public void bid(String auctionName, int price) {

@@ -33,10 +33,11 @@ public class VSObjectConnection {
 			//System.out.println("run before sendChunk successfully");
 			connect.sendChunk(byteSend);
 			//System.out.println("sendChunk successfully");
-			if(object_stream!=null){
-				object_stream.close();
-				stream_byteArray.close();
-			}
+			
+//			if(object_stream!=null){
+//				object_stream.close();
+//				stream_byteArray.close();
+//			}
 			
 		} catch (IOException e) {
 			System.err.println("error when sendObject");

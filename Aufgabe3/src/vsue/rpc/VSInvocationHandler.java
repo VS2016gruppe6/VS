@@ -106,11 +106,11 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					System.out.println("got right answer for requestID "+ requestId + " at " + i + " SequenzNr");
 					
 					if (resttime <= 0) {
-						socket.setSoTimeout(0);   //redunance
+//						socket.setSoTimeout(0);   //redunance
 						break;
 					}
 					
-					socket.setSoTimeout(0);
+//					socket.setSoTimeout(0);
 	
 					Throwable exc = revMsg.getFehler();
 					if (exc != null) {
@@ -133,7 +133,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					System.out.println("SocketTimeoutException  = " + runTime);
 					System.out.println("request" + " " + requestId + " "
 							+ "timeout" + " " + i);
-					socket.setSoTimeout(0);
+//					socket.setSoTimeout(0);
 					break;
 				} catch (Exception e) {
 					System.out.println("something wrong" + i);
@@ -143,7 +143,6 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 				}
 			}
 		}
-					
 		throw new RemoteException("Max retries reached.");
 	}
 }

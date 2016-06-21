@@ -9,9 +9,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedHashSet;
 import java.util.List;
+
+import vsue.rmi.VSAuctionService;
 
 
 public class VSKeyValueClient implements VSKeyValueReplyHandler {
@@ -33,6 +37,15 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		// Export client
 		try {
 			UnicastRemoteObject.exportObject(this, 0);
+			
+//--------------------------------------------------------- code added 21.06
+			
+			Registry registry = LocateRegistry.getRegistry(registryHost,
+					registryPort);
+			service = (VSAuctionService) registry.lookup("service");
+			
+//----------------------------------------------------------
+			
 		} catch(RemoteException re) {
 			System.err.println("Unable to export client: " + re);
 			System.err.println("The client will not be able to receive replies");

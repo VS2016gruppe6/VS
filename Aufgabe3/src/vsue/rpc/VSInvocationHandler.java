@@ -90,12 +90,7 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					//test time
 					runTime = System.currentTimeMillis()-t_begin ;      //end
 					resttime = (int) (socketTimeout-runTime);
-					
-					//for test
-//					System.out.println("runTime = " + runTime);     
-//					System.out.println("resttime is " + resttime);
-					
-					
+										
 					// latest antwort comes,return
 					if (revMsg == null || !(revMsg.getRequestID() == requestId && revMsg
 									.getSequenzNr() == i)) {
@@ -105,12 +100,8 @@ public class VSInvocationHandler implements InvocationHandler, Serializable {
 					
 					System.out.println("got right answer for requestID "+ requestId + " at " + i + " SequenzNr");
 					
-					if (resttime <= 0) {
-//						socket.setSoTimeout(0);   //redunance
-						break;
-					}
+					if (resttime <= 0)  break;
 					
-//					socket.setSoTimeout(0);
 	
 					Throwable exc = revMsg.getFehler();
 					if (exc != null) {

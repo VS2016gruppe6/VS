@@ -3,18 +3,16 @@ package vsue.rmi;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
 import java.security.Provider.Service;
 
 public class VSAuctionRMIClient implements VSAuctionEventHandler {
 	/* The user name provided via command line. */
 	private final String userName;
-
+	
 	private VSAuctionService service;
 
 	public VSAuctionRMIClient(String userName) {
@@ -29,12 +27,10 @@ public class VSAuctionRMIClient implements VSAuctionEventHandler {
 		 * TODO: Implement client startup code
 		 */
 		try {
-
-			UnicastRemoteObject.exportObject(this, 0);
-
 			Registry registry = LocateRegistry.getRegistry(registryHost,
 					registryPort);
-			service = (VSAuctionService) registry.lookup("service");
+			service = (VSAuctionService) registry
+					.lookup("service");
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,6 +38,7 @@ public class VSAuctionRMIClient implements VSAuctionEventHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	public void shutdown() {
@@ -59,31 +56,11 @@ public class VSAuctionRMIClient implements VSAuctionEventHandler {
 		/*
 		 * TODO: Implement event handler
 		 */
-
-		switch (event) {
-
-		case AUCTION_END:
-			// auction.lastevent= VSAuctionEventType.AUCTION_END;;
-			System.out.println("auction is end/n");
-
-		case AUCTION_WON:
-			if (auction.highstBid != null) {
-				System.out.println("winner ist " + auction.highstBid
-						+ " with Price:" + auction.price + "/n");
-			} else {
-
-				System.out.println("no winner!/n");
-			}
-			break;
-
-		case HIGHER_BID:
-			System.out.println("new higher bid existed/n");
-			break;
-
-		default:
-			break;
-		}
-
+		
+		
+		
+		
+		
 	}
 
 	// ##################
@@ -93,21 +70,19 @@ public class VSAuctionRMIClient implements VSAuctionEventHandler {
 		/*
 		 * TODO: Register auction
 		 */
+		// VSAuction objekt = new VSAuction(auctionName,startingPrice);
+		// VSAuctionService objektService = new
+		// VSAuctionService(objekt,duration,);
+		
+		registerAuction(auctionName,duration,
+				VSAuctionEventHandler handler);
+		
+		getAuctions();
+		
+		 placeBid(String userName, String auctionName, int price,
+					VSAuctionEventHandler handler);
+		
 		System.out.println("register!");
-
-		VSAuction auction = new VSAuction(auctionName, startingPrice, duration);
-
-		// System.out.println("auction!");
-
-		try {
-			service.registerAuction(auction, duration, this);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (VSAuctionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 	}
 
@@ -115,38 +90,17 @@ public class VSAuctionRMIClient implements VSAuctionEventHandler {
 		/*
 		 * TODO: List all auctions that are currently in progress
 		 */
+		
+		VSAuction[] aktiveVSAuction=getAuctions();
+		
 		System.out.println("list!");
-
-		try {
-			for (VSAuction element : service.getAuctions()) {
-				if (element == null)
-					continue;
-				System.out.println(element.getName() + "\n");
-
-			}
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 	public void bid(String auctionName, int price) {
 		/*
 		 * TODO: Place a new bid
 		 */
-
 		System.out.println("bid!");
-
-		try {
-			service.placeBid(userName, auctionName, price, this);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (VSAuctionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 	}
 

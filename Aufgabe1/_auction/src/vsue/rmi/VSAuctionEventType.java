@@ -2,7 +2,9 @@ package vsue.rmi;
 
 public enum VSAuctionEventType
 {
-		
+	AUCTION_START,
+	CURRENT_HIGHEST,
+	
     /** Used by the service to notify a client that the client's bid
      * is no longer the highest bid for a particular auction. 
      */

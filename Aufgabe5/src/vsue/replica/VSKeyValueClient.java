@@ -15,13 +15,20 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import vsue.rmi.VSAuctionService;
 
 
 public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	/* The addresses of all potential replicas. */
 	private final InetSocketAddress[] replicaAddresses;
+	
+	//--------------------------------------------------------- code added 22.06
+	
+	private VSKeyValueRequestHandler Request_Handler;
+
+	
+	//---------------------------------------------------------
+	
 	
 	
 	public VSKeyValueClient(InetSocketAddress[] replicaAddresses) {
@@ -40,10 +47,9 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 			
 //--------------------------------------------------------- code added 21.06
 			
-			Registry registry = LocateRegistry.getRegistry(registryHost,
-					registryPort);
-			service = (VSAuctionService) registry.lookup("service");
-			
+			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
+			Request_Handler = (VSKeyValueRequestHandler) registry.lookup("service");
+			UnicastRemoteObject.exportObject(this,0);
 //----------------------------------------------------------
 			
 		} catch(RemoteException re) {
@@ -79,36 +85,32 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	// # KEY-VALUE STORE #
 	// ###################
 
-	public void put(String key, String value) throws RemoteException {
-		/*
-		 * TODO: Invoke PUT operation
-		 */
+	public void put(String key, String value) throws RemoteException {	
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.PUT,key,value,0);
+		Request_Handler.handleRequest(Request);
 	}
 	
 	public String get(String key) throws VSKeyValueException, RemoteException {
-		/*
-		 * TODO: Invoke GET operation
-		 */
+		
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.GET,key,null,0);
+		Request_Handler.handleRequest(Request);	
 		return null;
 	}
 
 	public void delete(String key) throws RemoteException {
-		/*
-		 * TODO: Invoke DELETE operation
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.DELETE,key,null,0);
+		Request_Handler.handleRequest(Request);
 	}
 
 	public long exists(String key) throws RemoteException {
-		/*
-		 * TODO: Invoke EXISTS operation
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.EXISTS,key,null,0);
+		Request_Handler.handleRequest(Request);
 		return -1L;
 	}
 
 	public long reliableExists(String key, int threshold) throws RemoteException {
-		/*
-		 * TODO: Invoke reliable EXISTS operation (Exercise 5.3, optional for 5.0 ECTS)
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.RELIABLE_EXISTS,key,null,0);
+		Request_Handler.handleRequest(Request);
 		return -1L;
 	}
 

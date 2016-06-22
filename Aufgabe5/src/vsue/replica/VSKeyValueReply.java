@@ -5,8 +5,23 @@ import java.io.Serializable;
 
 public class VSKeyValueReply implements Serializable {
 
-	/*
-	 * TODO: Implement reply
-	 */
-
+	private VSKeyValueReplica Replying_Replica;
+	
+	private VSKeyValueOperation Operation;
+	
+	private String Value;
+	
+	private Long UpdatingTime;
+	
+	public VSKeyValueReply(VSKeyValueReplica Replying_Replica,
+							VSKeyValueOperation Operation,
+							String Value,
+							Long UpdatingTime){
+		
+		this.Replying_Replica = Replying_Replica;
+		this.Operation = Operation;
+		this.Value = Value;
+		this.UpdatingTime = UpdatingTime;
+	}
+	
 }

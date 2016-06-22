@@ -24,4 +24,20 @@ public class VSKeyValueReply implements Serializable {
 		this.UpdatingTime = UpdatingTime;
 	}
 	
+	public VSKeyValueReplica GetReplyingReplica(){
+		return this.Replying_Replica;
+	}
+	
+	public VSKeyValueOperation GetReplyingOperation(){
+		return this.Operation;
+	}
+	
+	public String GetReplyingValue(){
+		return this.Value;
+	}
+	
+	public Long GetUpdatingTime(){
+		return this.UpdatingTime;
+	}
+	
 }

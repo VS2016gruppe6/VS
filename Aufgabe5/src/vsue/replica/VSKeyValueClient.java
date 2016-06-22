@@ -12,6 +12,8 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -75,9 +77,30 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	@Override
 	public void handleReply(VSKeyValueReply reply) {
-		/*
-		 * TODO: Handle incoming replies sent by replicas
-		 */
+		switch (reply.GetReplyingOperation()){
+			case PUT:
+				break;
+				
+			case GET:
+				System.out.println("Value Readed:   "+reply.GetReplyingValue());
+				break;
+				
+			case EXISTS:
+				if(reply.GetUpdatingTime()!=0){
+					SimpleDateFormat sdf= new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");  
+					System.out.println(sdf.format(new Date(reply.GetUpdatingTime())));
+				}
+				else
+					System.out.println("no matched results found");
+				break;
+				
+			case RELIABLE_EXISTS:
+				break;
+				
+			default:
+				break;
+				
+		}
 	}
 
 

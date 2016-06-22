@@ -7,6 +7,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Hashtable;
 
 
+
 //----------------------------------------------code added 21.06
 
 public class VSKeyValueReplica implements VSKeyValueRequestHandler{
@@ -57,12 +58,19 @@ public class VSKeyValueReplica implements VSKeyValueRequestHandler{
 				break;
 				
 		}
-			
+	}
+	
+	
+	public static void main(String[] args) throws Exception {
+		VSKeyValueReplica Replica = new VSKeyValueReplica();
+
+		UnicastRemoteObject.exportObject(Replica, 0);
 		
+		Registry registry =LocateRegistry.createRegistry(12345);
 		
-		
-		// TODO Auto-generated method stub
-		
+		registry.bind("service", Replica);
+
+		System.out.println("Replica Service Start!");
 	}
 
 

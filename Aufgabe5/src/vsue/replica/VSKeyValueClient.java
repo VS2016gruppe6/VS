@@ -7,7 +7,11 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.AccessException;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -15,13 +19,16 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import vsue.rmi.VSAuctionService;
+
 
 
 public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	/* The addresses of all potential replicas. */
 	private final InetSocketAddress[] replicaAddresses;
+	VSKeyValueRequest request ;
+	VSKeyValueReplica replica;
+	VSKeyValueReply _reply;
 	
 	
 	public VSKeyValueClient(InetSocketAddress[] replicaAddresses) {
@@ -35,22 +42,57 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 
 	public void init() {
 		// Export client
+		Remote Sc = null;
 		try {
-			UnicastRemoteObject.exportObject(this, 0);
-			
-//--------------------------------------------------------- code added 21.06
-			
-			Registry registry = LocateRegistry.getRegistry(registryHost,
-					registryPort);
-			service = (VSAuctionService) registry.lookup("service");
-			
-//----------------------------------------------------------
+			  Sc = UnicastRemoteObject.exportObject(this, 0);
 			
 		} catch(RemoteException re) {
 			System.err.println("Unable to export client: " + re);
 			System.err.println("The client will not be able to receive replies");
-			return;
 		}
+		Registry registry = null;
+		try {
+			registry = LocateRegistry.createRegistry(12345);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}  
+		
+		try {
+			registry.bind("Sc", Sc);
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (AlreadyBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// lookup stub of replica
+		try {
+			registry = LocateRegistry.getRegistry(12345);
+		} catch (RemoteException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}  
+		
+		
+		String RepId = "0";// todo: lookup by id
+		try {
+			replica = (VSKeyValueReplica)registry.lookup(RepId);
+		} catch (AccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public void shutdown() {
@@ -68,10 +110,14 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	// #################
 	
 	@Override
-	public void handleReply(VSKeyValueReply reply) {
+	public void handleReply(VSKeyValueReply reply) throws VSKeyValueException {
 		/*
 		 * TODO: Handle incoming replies sent by replicas
 		 */
+		_reply = reply;
+		if(_reply.getvalue() == null){
+			throw new VSKeyValueException("");
+		}
 	}
 
 
@@ -83,12 +129,18 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		/*
 		 * TODO: Invoke PUT operation
 		 */
+		
+		request = new VSKeyValueRequest(key,value);
+		replica.handleRequest(request);
 	}
 	
 	public String get(String key) throws VSKeyValueException, RemoteException {
 		/*
 		 * TODO: Invoke GET operation
 		 */
+		//todo  not exist exception
+		request = new VSKeyValueRequest(key,1);
+		replica.handleRequest(request);
 		return null;
 	}
 
@@ -96,12 +148,16 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		/*
 		 * TODO: Invoke DELETE operation
 		 */
+		request = new VSKeyValueRequest(key,2);
+		replica.handleRequest(request);
 	}
 
 	public long exists(String key) throws RemoteException {
 		/*
 		 * TODO: Invoke EXISTS operation
 		 */
+		request = new VSKeyValueRequest(key,3);
+		replica.handleRequest(request);
 		return -1L;
 	}
 

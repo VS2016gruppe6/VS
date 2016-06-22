@@ -14,8 +14,7 @@ public class VSKeyValueReplica implements VSKeyValueRequestHandler{
 
 	private Hashtable<String, String> VSKeyValue = new Hashtable<String, String>();
 	
-	private VSKeyValueReplyHandler ReplyHandler;
-	
+
 	@Override
 	public void handleRequest(VSKeyValueRequest request) throws RemoteException {
 		switch (request.GetRequestingOperration()){
@@ -27,7 +26,8 @@ public class VSKeyValueReplica implements VSKeyValueRequestHandler{
 															VSKeyValueOperation.GET,
 															VSKeyValue.get(request.GetOperationArg1()),
 															(long)0);
-				ReplyHandler.handleReply(Reply1);
+				System.out.print(VSKeyValue.get(request.GetOperationArg1()));
+				request.GetRequestingClient().handleReply(Reply1);
 				break;
 				
 			case DELETE:
@@ -40,14 +40,14 @@ public class VSKeyValueReplica implements VSKeyValueRequestHandler{
 																VSKeyValueOperation.EXISTS,
 																VSKeyValue.get(request.GetOperationArg1()),
 																System.currentTimeMillis());
-				ReplyHandler.handleReply(Reply2);
+					request.GetRequestingClient().handleReply(Reply2);
 				}
 				else{
 					VSKeyValueReply Reply2 = new VSKeyValueReply(this,
 																VSKeyValueOperation.EXISTS,
 																VSKeyValue.get(request.GetOperationArg1()),
 																System.currentTimeMillis());	
-				ReplyHandler.handleReply(Reply2);	
+					request.GetRequestingClient().handleReply(Reply2);	
 				}
 				break;
 			
@@ -58,19 +58,6 @@ public class VSKeyValueReplica implements VSKeyValueRequestHandler{
 				break;
 				
 		}
-	}
-	
-	
-	public static void main(String[] args) throws Exception {
-		VSKeyValueReplica Replica = new VSKeyValueReplica();
-
-		UnicastRemoteObject.exportObject(Replica, 0);
-		
-		Registry registry =LocateRegistry.createRegistry(12345);
-		
-		registry.bind("service", Replica);
-
-		System.out.println("Replica Service Start!");
 	}
 
 

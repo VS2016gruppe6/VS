@@ -7,7 +7,9 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -27,6 +29,7 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	//--------------------------------------------------------- code added 22.06
 	
 	private VSKeyValueRequestHandler Request_Handler;
+	private String GetResult;
 
 	
 	//---------------------------------------------------------
@@ -49,12 +52,12 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 			
 //--------------------------------------------------------- code added 21.06
 			
-			Registry registry = LocateRegistry.getRegistry(registryHost,registryPort);
+			Registry registry = LocateRegistry.getRegistry("faui02o",12345);
 			Request_Handler = (VSKeyValueRequestHandler) registry.lookup("service");
-			UnicastRemoteObject.exportObject(this,0);
-//----------------------------------------------------------
 			
-		} catch(RemoteException re) {
+			registry.bind("client", Request_Handler);
+//----------------------------------------------------------
+		} catch(RemoteException | NotBoundException | AlreadyBoundException re) {
 			System.err.println("Unable to export client: " + re);
 			System.err.println("The client will not be able to receive replies");
 			return;
@@ -82,7 +85,8 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 				break;
 				
 			case GET:
-				System.out.println("Value Readed:   "+reply.GetReplyingValue());
+			//	System.out.println("Value Readed:   "+reply.GetReplyingValue());
+				GetResult = reply.GetReplyingValue();
 				break;
 				
 			case EXISTS:
@@ -117,6 +121,9 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		
 		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.GET,key,null,0);
 		Request_Handler.handleRequest(Request);	
+		if (GetResult != null)
+			return GetResult;
+		else
 		return null;
 	}
 
@@ -257,8 +264,10 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		}
 		InetSocketAddress[] replicaAddresses = addresses.toArray(new InetSocketAddress[addresses.size()]);
 		
+		
 		// Create and execute client
 		VSKeyValueClient client = new VSKeyValueClient(replicaAddresses);
+	//	VSKeyValueClient client = new VSKeyValueClient(null);
 		client.init();
 		client.shell();
 		client.shutdown();

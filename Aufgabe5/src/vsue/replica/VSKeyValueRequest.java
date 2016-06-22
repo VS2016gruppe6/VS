@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class VSKeyValueRequest implements Serializable {
 
-	private VSKeyValueClient Requesting_Client;
+	private VSKeyValueReplyHandler Requesting_Client;
 	
 	private VSKeyValueOperation Operation;
 	
@@ -15,7 +15,7 @@ public class VSKeyValueRequest implements Serializable {
 	
 	private int threshold;
 	
-	public VSKeyValueRequest(VSKeyValueClient Requesting_Client,
+	public VSKeyValueRequest(VSKeyValueReplyHandler Requesting_Client,
 									VSKeyValueOperation Operation,
 									String arg1,
 									String arg2,
@@ -27,7 +27,7 @@ public class VSKeyValueRequest implements Serializable {
 		this.threshold = threshold;
 	}
 	
-	public VSKeyValueClient GetRequestingClient(){
+	public VSKeyValueReplyHandler GetRequestingClient(){
 		return this.Requesting_Client;
 	}
 	
@@ -47,7 +47,7 @@ public class VSKeyValueRequest implements Serializable {
 		return this.threshold;
 	}
 	
-	public void SetRequestingClient(VSKeyValueClient Requesting_Client) {
+	public void SetRequestingClient(VSKeyValueReplyHandler Requesting_Client) {
 		this.Requesting_Client = Requesting_Client;
 	}
 	

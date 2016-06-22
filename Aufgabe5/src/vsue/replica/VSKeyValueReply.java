@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 public class VSKeyValueReply implements Serializable {
 
-	private VSKeyValueReplica Replying_Replica;
+	private VSKeyValueRequestHandler Replying_Replica;
 	
 	private VSKeyValueOperation Operation;
 	
@@ -13,7 +13,7 @@ public class VSKeyValueReply implements Serializable {
 	
 	private Long UpdatingTime;
 	
-	public VSKeyValueReply(VSKeyValueReplica Replying_Replica,
+	public VSKeyValueReply(VSKeyValueRequestHandler Replying_Replica,
 							VSKeyValueOperation Operation,
 							String Value,
 							Long UpdatingTime){
@@ -24,7 +24,7 @@ public class VSKeyValueReply implements Serializable {
 		this.UpdatingTime = UpdatingTime;
 	}
 	
-	public VSKeyValueReplica GetReplyingReplica(){
+	public VSKeyValueRequestHandler GetReplyingReplica(){
 		return this.Replying_Replica;
 	}
 	

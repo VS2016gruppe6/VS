@@ -7,21 +7,33 @@ import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import vsue.rmi.VSAuctionService;
 
 
 public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	/* The addresses of all potential replicas. */
 	private final InetSocketAddress[] replicaAddresses;
+	
+	//--------------------------------------------------------- code added 22.06
+	
+	private VSKeyValueRequestHandler Request_Handler;
+	private String GetResult;
+
+	
+	//---------------------------------------------------------
+	
 	
 	
 	public VSKeyValueClient(InetSocketAddress[] replicaAddresses) {
@@ -40,13 +52,12 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 			
 //--------------------------------------------------------- code added 21.06
 			
-			Registry registry = LocateRegistry.getRegistry(registryHost,
-					registryPort);
-			service = (VSAuctionService) registry.lookup("service");
+			Registry registry = LocateRegistry.getRegistry("faui02o",12345);
+			Request_Handler = (VSKeyValueRequestHandler) registry.lookup("service");
 			
+			registry.bind("client", Request_Handler);
 //----------------------------------------------------------
-			
-		} catch(RemoteException re) {
+		} catch(RemoteException | NotBoundException | AlreadyBoundException re) {
 			System.err.println("Unable to export client: " + re);
 			System.err.println("The client will not be able to receive replies");
 			return;
@@ -69,9 +80,31 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	@Override
 	public void handleReply(VSKeyValueReply reply) {
-		/*
-		 * TODO: Handle incoming replies sent by replicas
-		 */
+		switch (reply.GetReplyingOperation()){
+			case PUT:
+				break;
+				
+			case GET:
+			//	System.out.println("Value Readed:   "+reply.GetReplyingValue());
+				GetResult = reply.GetReplyingValue();
+				break;
+				
+			case EXISTS:
+				if(reply.GetUpdatingTime()!=0){
+					SimpleDateFormat sdf= new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");  
+					System.out.println(sdf.format(new Date(reply.GetUpdatingTime())));
+				}
+				else
+					System.out.println("no matched results found");
+				break;
+				
+			case RELIABLE_EXISTS:
+				break;
+				
+			default:
+				break;
+				
+		}
 	}
 
 
@@ -79,36 +112,35 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	// # KEY-VALUE STORE #
 	// ###################
 
-	public void put(String key, String value) throws RemoteException {
-		/*
-		 * TODO: Invoke PUT operation
-		 */
+	public void put(String key, String value) throws RemoteException {	
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.PUT,key,value,0);
+		Request_Handler.handleRequest(Request);
 	}
 	
 	public String get(String key) throws VSKeyValueException, RemoteException {
-		/*
-		 * TODO: Invoke GET operation
-		 */
+		
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.GET,key,null,0);
+		Request_Handler.handleRequest(Request);	
+		if (GetResult != null)
+			return GetResult;
+		else
 		return null;
 	}
 
 	public void delete(String key) throws RemoteException {
-		/*
-		 * TODO: Invoke DELETE operation
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.DELETE,key,null,0);
+		Request_Handler.handleRequest(Request);
 	}
 
 	public long exists(String key) throws RemoteException {
-		/*
-		 * TODO: Invoke EXISTS operation
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.EXISTS,key,null,0);
+		Request_Handler.handleRequest(Request);
 		return -1L;
 	}
 
 	public long reliableExists(String key, int threshold) throws RemoteException {
-		/*
-		 * TODO: Invoke reliable EXISTS operation (Exercise 5.3, optional for 5.0 ECTS)
-		 */
+		VSKeyValueRequest Request = new VSKeyValueRequest(this,VSKeyValueOperation.RELIABLE_EXISTS,key,null,0);
+		Request_Handler.handleRequest(Request);
 		return -1L;
 	}
 
@@ -232,8 +264,10 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 		}
 		InetSocketAddress[] replicaAddresses = addresses.toArray(new InetSocketAddress[addresses.size()]);
 		
+		
 		// Create and execute client
 		VSKeyValueClient client = new VSKeyValueClient(replicaAddresses);
+	//	VSKeyValueClient client = new VSKeyValueClient(null);
 		client.init();
 		client.shell();
 		client.shutdown();

@@ -16,7 +16,6 @@ public class VSKeyValueReplicaSever {
 				.exportObject(Replica, 0);
 
 		Registry registry = LocateRegistry.createRegistry(12346);
-
 		registry.bind("service", ReplicaExport);
 
 		//for JGropus: receive first

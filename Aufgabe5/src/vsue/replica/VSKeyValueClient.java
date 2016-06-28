@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Random;
 
 
 
@@ -25,18 +26,9 @@ import java.util.List;
 public class VSKeyValueClient implements VSKeyValueReplyHandler {
 	
 	/* The addresses of all potential replicas. */
-	private final InetSocketAddress[] replicaAddresses;
-	
-	//--------------------------------------------------------- code added 22.06
-	
+	private final InetSocketAddress[] replicaAddresses;	
 	private VSKeyValueRequestHandler Request_Handler;
-	private String GetResult;
-
-	
-	//---------------------------------------------------------
-	
-	
-	
+	private String GetResult;	
 	public VSKeyValueClient(InetSocketAddress[] replicaAddresses) {
 		this.replicaAddresses = replicaAddresses;
 	}
@@ -48,17 +40,20 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 
 	public void init() {
 		// Export client
-		try {
+		try {		
+	
+//			Registry registry = LocateRegistry.getRegistry("faui02v",12346);
+			
+			//export und with replica random conncted
 			UnicastRemoteObject.exportObject(this, 0);
-			
-//--------------------------------------------------------- code added 21.06
-			
-			Registry registry = LocateRegistry.getRegistry("faui02o",12345);
+			int replipcaNr = (int) (Math.random()*2);   //2 : amount of replica
+			Registry registry = LocateRegistry.getRegistry(replicaAddresses[replipcaNr].getHostString(),
+																	replicaAddresses[replipcaNr].getPort());
 			Request_Handler = (VSKeyValueRequestHandler) registry.lookup("service");
 			
-			registry.bind("client", Request_Handler);
-//----------------------------------------------------------
-		} catch(RemoteException | NotBoundException | AlreadyBoundException re) {
+			System.out.println("connected with replica in "+replicaAddresses[replipcaNr]+"!");		
+			
+		} catch(RemoteException | NotBoundException re) {
 			System.err.println("Unable to export client: " + re);
 			System.err.println("The client will not be able to receive replies");
 			return;
@@ -264,11 +259,9 @@ public class VSKeyValueClient implements VSKeyValueReplyHandler {
 			}
 		}
 		InetSocketAddress[] replicaAddresses = addresses.toArray(new InetSocketAddress[addresses.size()]);
-		
-		
+				
 		// Create and execute client
 		VSKeyValueClient client = new VSKeyValueClient(replicaAddresses);
-	//	VSKeyValueClient client = new VSKeyValueClient(null);
 		client.init();
 		client.shell();
 		client.shutdown();

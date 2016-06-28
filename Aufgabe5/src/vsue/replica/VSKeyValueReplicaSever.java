@@ -15,11 +15,11 @@ public class VSKeyValueReplicaSever {
 		VSKeyValueRequestHandler ReplicaExport = (VSKeyValueRequestHandler) UnicastRemoteObject
 				.exportObject(Replica, 0);
 
-		Registry registry = LocateRegistry.createRegistry(12345);
+		Registry registry = LocateRegistry.createRegistry(12346);
 
 		registry.bind("service", ReplicaExport);
 
-		//for JGropus
+		//for JGropus: receive first
 		JChannel channel = new JChannel();
 		channel.setReceiver(new ReceiverAdapter() {
 			public void receive(Message msg) {

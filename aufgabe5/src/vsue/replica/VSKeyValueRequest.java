@@ -16,16 +16,24 @@ public class VSKeyValueRequest implements Serializable {
 	
 	private int threshold;
 	
+	private long RequestID;
+	
+	public VSKeyValueRequest() {
+		// TODO Auto-generated constructor stub
+	}
+	
 	public VSKeyValueRequest(VSKeyValueReplyHandler Requesting_Client,
 									VSKeyValueOperation Operation,
 									String arg1,
 									String arg2,
-									int threshold){
+									int threshold,
+									long ID){
 		this.Requesting_Client = Requesting_Client;
 		this.Operation = Operation;
 		this.arg1 = arg1;
 		this.arg2 = arg2;
 		this.threshold = threshold;
+		this.RequestID = ID;
 	}
 	
 	public VSKeyValueReplyHandler GetRequestingClient(){
@@ -40,7 +48,7 @@ public class VSKeyValueRequest implements Serializable {
 		return this.arg1;
 	}
 	
-	public String GerOperationArg2(){
+	public String GetOperationArg2(){
 		return this.arg2;
 	}
 	
@@ -77,6 +85,8 @@ public class VSKeyValueRequest implements Serializable {
 		this.request = request;
 	}
 	
+
+
 	public String getkey(){
 		return this.key;
 	}
@@ -95,5 +105,9 @@ public class VSKeyValueRequest implements Serializable {
 	
 	public void setkey(String key){
 		this.key = key;
+	}
+	
+	public Long GetRequestID(){
+		return this.RequestID;
 	}
 }

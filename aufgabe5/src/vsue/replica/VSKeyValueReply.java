@@ -12,16 +12,19 @@ public class VSKeyValueReply implements Serializable {
 	private String Value;
 	
 	private Long UpdatingTime;
+	private Long ReplyID;
 	
 	public VSKeyValueReply(VSKeyValueRequestHandler Replying_Replica,
 							VSKeyValueOperation Operation,
 							String Value,
-							Long UpdatingTime){
+							Long UpdatingTime,
+							Long ID){
 		
 		this.Replying_Replica = Replying_Replica;
 		this.Operation = Operation;
 		this.Value = Value;
 		this.UpdatingTime = UpdatingTime;
+		this.ReplyID = ID;
 	}
 	
 	public VSKeyValueRequestHandler GetReplyingReplica(){
@@ -38,6 +41,10 @@ public class VSKeyValueReply implements Serializable {
 	
 	public Long GetUpdatingTime(){
 		return this.UpdatingTime;
+	}
+	
+	public Long GetReplyID(){
+		return this.ReplyID;
 	}
 	
 }

@@ -18,8 +18,9 @@ public class VSKeyValueReplicaSever {
 		Registry registry = LocateRegistry.createRegistry(12346);
 		registry.bind("service", ReplicaExport);
 
+		((VSKeyValueReplica) Replica).ChannelStart("GRUPPE6");
 		//for JGropus: receive first
-		JChannel channel = new JChannel();
+		/*JChannel channel = new JChannel();
 		channel.setReceiver(new ReceiverAdapter() {
 			public void receive(Message msg) {
 				System.out.println("received msg from " + msg.getSrc() + ": "
@@ -27,7 +28,7 @@ public class VSKeyValueReplicaSever {
 			}
 		});
 		channel.connect("gruppe6");
-		channel.send(new Message(null, "hello world"));
+		channel.send(new Message(null, "hello world"));*/
 		//channel.close();
 
 		System.out.println("Replica Service Start!");

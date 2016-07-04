@@ -6,3 +6,5 @@
 - Aufgabe4
 - Aufgabe5
 - Aufgabe6(**offen**)
+
+## Leben ist zu kurz, Informatik zu lernen!!! 

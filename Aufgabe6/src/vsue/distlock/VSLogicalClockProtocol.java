@@ -15,7 +15,7 @@ import vsue.distlock.FIFOUnicast.SimulatedUnicastProtocolHeader;
 
 public class VSLogicalClockProtocol extends Protocol {
 	
-	public int ProtocolCounter=0;
+	public int LC_Counter=1;
 	
 	public static class ClockHeader extends Header {
 		public static final short header_id = 1501;
@@ -29,37 +29,36 @@ public class VSLogicalClockProtocol extends Protocol {
 		
 		@Override
 		public void writeTo(DataOutput out) throws IOException {
+			byte[] Output = null;
 			try {
-				Util.writeObject(this, out);
+				Output = Util.objectToByteBuffer(HeaderCounter);
+				out.write(Output);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}		
 		}
 		
 		@Override
 		public void readFrom(DataInput in) throws IOException {
-			ClockHeader Input = null;
+			byte[] Input = null;
 			try {
-				Input = (ClockHeader) Util.readObject(in);
+				Input = Util.objectToByteBuffer(in);
+				this.HeaderCounter = (int) Util.objectFromByteBuffer(Input, 0, size());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			HeaderCounter = Input.HeaderCounter;	
+			}						
 		}
 		
 		@Override
 		public int size() {	
-			// XXX IMPLEMENT ME XXX
-			return 0;
+			return 4;
 		}
 	}
-	
+
 	// --- Interface for LamportLockProtocol class ---
 	
 	public static int getMessageTime(Message m) {
-		ClockHeader header = (ClockHeader) m.getHeader((short) 1501);
+		ClockHeader header = (ClockHeader) m.getHeader(ClockHeader.header_id);
 		if(header != null)
 			return header.HeaderCounter;
 		else
@@ -72,16 +71,30 @@ public class VSLogicalClockProtocol extends Protocol {
 	public Object down(Event evt) {
 		switch (evt.getType()) {
 		case Event.MSG:
-			ClockHeader header =  
-			break;
+			Message m = (Message) evt.getArg();
+			ClockHeader header =  new ClockHeader(LC_Counter);
+			m.putHeader(ClockHeader.header_id, header);
+			LC_Counter++;
+			return down_prot.down(new Event(Event.MSG,m));
 		}
 		return down_prot.down(evt); 
 	}
 	
 	@Override
 	public Object up(Event evt) {
-		// XXX IMPLEMENT ME XXX
-		
+		switch(evt.getType()){
+		case Event.MSG:
+			Message m = (Message) evt.getArg();
+			ClockHeader CH = (ClockHeader) m.getHeader(ClockHeader.header_id);
+			
+			if (CH.HeaderCounter > LC_Counter){
+				LC_Counter = CH.HeaderCounter + 1;
+			}
+			else
+				LC_Counter++;
+			Message Package = (Message) m.getObject();
+			return up_prot.up(new Event(Event.MSG,Package));
+		}
 		return up_prot.up(evt);
 	}
 	

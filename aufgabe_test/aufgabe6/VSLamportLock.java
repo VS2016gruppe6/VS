@@ -6,34 +6,47 @@ import org.jgroups.Message;
 public class VSLamportLock {
 	private JChannel channel;
 	boolean flag = false;
+	private VSLamportLockProtocol myLockProtocol;
    public VSLamportLock(JChannel channel) {
      // XXX IMPLEMENT ME XXX
 	   this.channel = channel;
+		myLockProtocol = (VSLamportLockProtocol) channel.getProtocolStack()
+				.findProtocol(VSLamportLockProtocol.class);
+		myLockProtocol.register(this);
    }
    
    
    public synchronized void Notify(){
-	   this.notify();
+	   synchronized(this){
+		   flag = true;
+		   this.notify();
+	   }
+	
    }
    
    
    
    public void lock() {
      // XXX IMPLEMENT ME XXX
-	   Message msg = new Message(null, channel.getAddress(), "lock");
-	   try {
-		channel.send(msg);
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-
-	   try {
-		this.wait();
-	} catch (InterruptedException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	   synchronized(this){
+	   String lock = "lock";
+	   Message msg = new Message(null, channel.getAddress(), lock);
+	   flag = false;
+		   try {
+			channel.send(msg);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   while(!flag){	   
+		   try {
+				this.wait();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	   }
+   }
 	   
    }
 
@@ -41,7 +54,8 @@ public class VSLamportLock {
    
    public void unlock() {
      // XXX IMPLEMENT ME XXX
-	   Message msg = new Message(null, channel.getAddress(), "unlock");
+	   String unlock = "unlock";
+	   Message msg = new Message(null, channel.getAddress(), unlock);
 	   try {
 		channel.send(msg);
 	} catch (Exception e) {

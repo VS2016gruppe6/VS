@@ -1,7 +1,11 @@
 package vsue.distlock;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
+import java.io.DataInputStream;
 import java.io.DataOutput;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jgroups.Address;
 import org.jgroups.Event;
+import org.jgroups.Global;
 import org.jgroups.Header;
 import org.jgroups.Message;
 import org.jgroups.View;
@@ -23,13 +28,27 @@ public final class VSLamportLockProtocol extends Protocol {
 	public enum LockProtocolHeaderType{
 		RELEASE,REQUEST,ACK
 	}
-	VSLamportLock registeredLock;
+	private volatile VSLamportLock registeredLock;
 	private volatile Address localAddress;
 	private volatile timestamp localTimeStamp;
 	private volatile ConcurrentSkipListSet<timestamp> list = new ConcurrentSkipListSet<timestamp>();
 	private volatile Map<String,timestamp> ReceivedTimeStampMap = new ConcurrentHashMap<>();
-	private volatile AtomicInteger sum;
+
 	
+	private synchronized void checkCritical() {
+		timestamp first = list.first();
+
+		for (timestamp t : ReceivedTimeStampMap.values()) {
+			if (t.compareTo(first) < 0) {
+				return;
+			}
+		}
+
+		// no smaller timestamp found
+		registeredLock.Notify();
+	}
+	
+
 	public synchronized void setlocalTimestamp(timestamp stamp){
 		this.localTimeStamp = stamp;
 	}
@@ -57,13 +76,19 @@ public final class VSLamportLockProtocol extends Protocol {
 		}
 		
 		@Override
-		public void writeTo(DataOutput out) throws IOException {
-			out.writeByte(lpHeadType.ordinal());
+		public void writeTo(DataOutput out) {
+			try{
+			out.writeByte(lpHeadType.ordinal());}
+			catch(Exception e){
+				System.out.println("break point1");
+				e.printStackTrace();
+				
+			}
 		}
 		
 		@Override
 		public int size() {
-			return 0;
+			return Global.BYTE_SIZE;
 		}
 	}
 	
@@ -87,7 +112,8 @@ public final class VSLamportLockProtocol extends Protocol {
 			case Event.MSG:
 				Message msg = (Message) evt.getArg();
 				String order = (String) msg.getObject();
-			
+				Message Remsg = new Message();
+				Remsg.setSrc(localAddress);
 				LockProtocolHeader header = null;
 				if(order.equals("lock")){
 					 header = new LockProtocolHeader(LockProtocolHeaderType.REQUEST);
@@ -95,9 +121,9 @@ public final class VSLamportLockProtocol extends Protocol {
 					 header = new LockProtocolHeader(LockProtocolHeaderType.RELEASE);
 					 list.pollFirst();
 				}
-				Message ReMsg = new Message();
-				ReMsg.putHeader(LockProtocolHeader.header_id, header);
-				return down_prot.down(new Event(Event.MSG,ReMsg));
+	
+				Remsg.putHeader(LockProtocolHeader.header_id, header);
+				return down_prot.down(new Event(Event.MSG,Remsg));
 			default:
 				return down_prot.down(evt);
 			}	
@@ -115,45 +141,50 @@ public final class VSLamportLockProtocol extends Protocol {
 			switch (evt.getType()) {
 			case Event.MSG:
 				Message msg = (Message) evt.getArg();
-				LockProtocolHeader header = (LockProtocolHeader) msg.getHeader(LockProtocolHeader.header_id);
-				timestamp receivedStamp = ((ClockHeader)msg.getHeader(ClockHeader.header_id)).getTimestamp();
-		
-				switch (header.getHeaderType()){
-				case REQUEST:
-					if(msg.getSrc().compareTo(localAddress) == 0){
-						setlocalTimestamp(receivedStamp);
-					}
-					list.add(receivedStamp);
-					//generieren ack if request received
-					LockProtocolHeader Ackheader =  new LockProtocolHeader(LockProtocolHeaderType.ACK);
-					Message AckMsg = new Message();
-					AckMsg.putHeader(LockProtocolHeader.header_id, Ackheader);
-					return down_prot.down(new Event(Event.MSG,AckMsg));
-				case RELEASE:
-					list.pollFirst();	
-					break;
-				case ACK:
-					// store received acks, when all acks from all members received, then notify()
-					ReceivedTimeStampMap.put(msg.getSrc().toString(), receivedStamp);
-					View receivedView = (View) evt.getArg();
-					for(Address address : receivedView.getMembers()){
-						if(ReceivedTimeStampMap.containsKey(address.toString())){
-							sum.incrementAndGet();
-						}							
-					}	
-					synchronized (this){
-						//  notify the wait in VSLamportLock
-						if(list.first().compareTo(localTimeStamp) == 0 &&
-								  	sum.intValue() == receivedView.size()){
-							registeredLock.Notify();
+				LockProtocolHeader header = (LockProtocolHeader) msg.
+						getHeader(LockProtocolHeader.header_id);
+				timestamp receivedStamp = ((ClockHeader)msg.
+						getHeader(ClockHeader.header_id)).getTimestamp();
+				ReceivedTimeStampMap.put(msg.getSrc().toString(),
+						localTimeStamp);
+				Object ret = null;
+				if(header == null){
+					return up_prot.up(evt);
+				}else{
+					
+					switch (header.getHeaderType()){
+					case REQUEST:
+						if(msg.getSrc().compareTo(localAddress) == 0){
+							setlocalTimestamp(receivedStamp);
+						}
+						list.add(receivedStamp);
+						//generieren ack if request received
+						LockProtocolHeader Ackheader =  new LockProtocolHeader(LockProtocolHeaderType.ACK);
+						Message AckMsg = new Message(msg.getSrc(), localAddress,null);
+						AckMsg.putHeader(LockProtocolHeader.header_id, Ackheader);
+						ret = down_prot.down(new Event(Event.MSG,AckMsg));
+						break;
+					case RELEASE:
+						// remove the first entry of the list, if RELEASE is
+						// received
+						if(msg.getSrc().compareTo(localAddress) != 0){
+							list.pollFirst();
 						}
 					}
-					break;	
+					
+				synchronized (this){
+						if(!list.isEmpty() && localTimeStamp != null
+								&& list.first().compareTo(localTimeStamp) == 0){
+							checkCritical();
+						}
+					}
 				}
-			default:
-				return up_prot.up(evt);
-			}
-
+				return ret;
+			
+		default:
+			return up_prot.up(evt);
+		}
+		
 	}
 	
 	@Override

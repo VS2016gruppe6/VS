@@ -4,5 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JGroups"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JGroup"/>
+	<classpathentry kind="lib" path="/home/cip/nf2015/jy43jiry/workspace/vs_aufgabe5/jgroups-3.6.8.Final-sources.jar"/>
+	<classpathentry kind="lib" path="/home/cip/nf2015/jy43jiry/workspace/vs_aufgabe5/jgroups-3.6.8.Final.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

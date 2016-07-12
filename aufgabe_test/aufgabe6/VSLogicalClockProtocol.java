@@ -5,15 +5,15 @@ import java.io.DataInputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.jgroups.Event;
+import org.jgroups.Global;
 import org.jgroups.Header;
 import org.jgroups.Message;
 import org.jgroups.conf.ClassConfigurator;
 import org.jgroups.stack.Protocol;
-import org.jgroups.util.Util;
+
 
 
 
@@ -38,14 +38,18 @@ public class VSLogicalClockProtocol extends Protocol  {
 		
 		@Override
 		public void writeTo(DataOutput out) throws IOException {
-			stamp.writeTo((DataOutputStream) out);
-	
+		//	stamp.writeTo((DataOutputStream) out);
+			out.writeInt(stamp.getCounter());
+			out.writeLong(stamp.getProcessID());
 		}
 		
 		@Override
 		public void readFrom(DataInput in) throws IOException {
-			stamp.readFrom((DataInputStream) in);
-					
+//			stamp = new timestamp();
+//			stamp.readFrom((DataInputStream) in);
+			stamp = new timestamp();
+			stamp.setCounter(in.readInt());
+			stamp.setProcessID(in.readLong());
 		}
 		
 		public timestamp getTimestamp() {
@@ -54,7 +58,7 @@ public class VSLogicalClockProtocol extends Protocol  {
 		
 		@Override
 		public int size() {	
-			return stamp.getsize();
+			return Global.BYTE_SIZE+stamp.getsize();
 		}
 	}
 
@@ -63,9 +67,9 @@ public class VSLogicalClockProtocol extends Protocol  {
 	public static int getMessageTime(Message m) {
 		ClockHeader header = (ClockHeader) m.getHeader(ClockHeader.header_id);
 		if(header != null)
-			return header.getTimestamp().getCounter();
+			return (int)header.getTimestamp().getCounter();
 		else
-			return 0;
+			return -1;
 	}
 	
 	// --- Protocol implementation ---
@@ -80,16 +84,19 @@ public class VSLogicalClockProtocol extends Protocol  {
 			m.putHeader(ClockHeader.header_id, header);
 			return down_prot.down(new Event(Event.MSG,m));
 			}
-		}	
-		return down_prot.down(evt); 
+		default:	
+			return down_prot.down(evt); 
+		}
 	}
-	
 	@Override
 	public Object up(Event evt) {
 		switch(evt.getType()){
 		case Event.MSG:
 			Message m = (Message) evt.getArg();
 			ClockHeader CH = (ClockHeader) m.getHeader(ClockHeader.header_id);
+			if (CH == null) {
+				return up_prot.up(evt);
+			}
 			synchronized(LC_Counter){
 				timestamp localstamp = new timestamp(LC_Counter.get());
 				switch(CH.getTimestamp().compareTo(localstamp)) {
@@ -101,7 +108,7 @@ public class VSLogicalClockProtocol extends Protocol  {
 					break;
 
 				case 0:
-					System.out.println("Error: Equal Timestamps");
+				//	System.out.println("Error: Equal Timestamps");
 				default :
 					break;
 				}

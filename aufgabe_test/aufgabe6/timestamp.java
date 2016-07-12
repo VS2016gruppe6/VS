@@ -3,8 +3,8 @@ package vsue.distlock;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-
 import org.jgroups.Global;
+
 
 
 
@@ -16,6 +16,10 @@ public class timestamp  implements Comparable<timestamp> {
 	public timestamp(int stamp){
 		this.counter = stamp;
 		processID = Thread.currentThread().getId();
+	}
+	
+	public timestamp(){
+		
 	}
 	
 	public void setCounter(Integer counter) {
@@ -56,15 +60,15 @@ public class timestamp  implements Comparable<timestamp> {
 		
 	}
 	
-	public void readFrom(DataInputStream in) throws IOException {
-			this.counter = in.readInt();
-			this.processID = in.readLong();
-	}
-	
-	public void writeTo(DataOutputStream out) throws IOException{
-			out.writeInt(this.counter);
-			out.writeLong(this.processID);
-	}
+//	public void readFrom(DataInputStream in) throws IOException {
+//			this.counter = in.readInt();
+//			this.processID = in.readLong();
+//	}
+//	
+//	public void writeTo(DataOutputStream out) throws IOException{
+//			out.writeInt(this.counter);
+//			out.writeLong(this.processID);
+//	}
 
 	
 

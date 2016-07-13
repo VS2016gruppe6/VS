@@ -54,8 +54,7 @@ public class VSLogicalClockProtocol extends Protocol  {
 		
 		@Override
 		public void readFrom(DataInput in) throws IOException {
-//			stamp = new timestamp();
-//			stamp.readFrom((DataInputStream) in);
+
 			stamp = new timestamp();
 			stamp.setCounter(in.readInt());
 			UUID address = new UUID();

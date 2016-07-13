@@ -43,7 +43,7 @@ public final class VSLamportLockProtocol extends Protocol {
 				return;
 			}
 		}
-
+		System.out.println("critical notify");
 		// no smaller timestamp found
 		registeredLock.Notify();
 	}
@@ -121,7 +121,7 @@ public final class VSLamportLockProtocol extends Protocol {
 				Message Remsg = new Message();
 				Remsg.setSrc(localAddress);
 				LockProtocolHeader header = null;
-				System.out.println(order.toString());
+				//System.out.println("point1");
 				if(order.equals("lock")){
 					//System.out.println("received lock");
 					 header = new LockProtocolHeader(LockProtocolHeaderType.REQUEST);
@@ -132,6 +132,7 @@ public final class VSLamportLockProtocol extends Protocol {
 				}
 	
 				Remsg.putHeader(LockProtocolHeader.header_id, header);
+				//System.out.println("point 2");
 				return down_prot.down(new Event(Event.MSG,Remsg));
 			default:
 				return down_prot.down(evt);
@@ -162,7 +163,7 @@ public final class VSLamportLockProtocol extends Protocol {
 							getHeader(ClockHeader.header_id)).getTimestamp();
 					//System.out.println("point4");
 
-					ReceivedTimeStampMap.put(msg.getSrc().toString(),localTimeStamp);
+					ReceivedTimeStampMap.put(msg.getSrc().toString(),receivedStamp);//localTimeStamp
 
 					Object ret = new Object();
 					if(header == null){
@@ -173,16 +174,17 @@ public final class VSLamportLockProtocol extends Protocol {
 						switch (header.getHeaderType()){
 						case REQUEST:
 
-							//						if(msg.getSrc().compareTo(localAddress) == 0){
-							//							setlocalTimestamp(receivedStamp);
-							//						}
+							if(msg.getSrc().compareTo(localAddress) == 0){
+								setlocalTimestamp(receivedStamp);
+							}
 							list.add(receivedStamp);
 							//generieren ack if request received
 							LockProtocolHeader Ackheader =  new LockProtocolHeader(LockProtocolHeaderType.ACK);
 							Message AckMsg = new Message(msg.getSrc(), localAddress,null);
 							AckMsg.putHeader(LockProtocolHeader.header_id, Ackheader);
 							ret = down_prot.down(new Event(Event.MSG,AckMsg));
-							break;
+							return ret;
+							//break;
 						case RELEASE:
 							if(msg.getSrc().compareTo(localAddress) != 0){
 								list.pollFirst();
@@ -193,12 +195,12 @@ public final class VSLamportLockProtocol extends Protocol {
 						synchronized (this){
 							if(!list.isEmpty() && localTimeStamp != null
 									&& list.first().compareTo(localTimeStamp) == 0){
-
+								System.out.println("point XXXXXXX");
 								checkCritical();
 							}
 						}
 					}
-					return ret;
+					//return ret;
 
 
 				default:

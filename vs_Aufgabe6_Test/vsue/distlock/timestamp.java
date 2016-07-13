@@ -13,7 +13,7 @@ public class timestamp  implements Comparable<timestamp> {
 	
 	public timestamp(int stamp, Address address){
 		this.counter = stamp;
-		address = address;
+		this.address = address;
 	}
 	
 	public timestamp(){
@@ -33,13 +33,13 @@ public class timestamp  implements Comparable<timestamp> {
 		return address;
 	}
 
-	public void setAddress(Address processID) {
-		this.address = processID;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 	
 	public int getsize() {
 		// TODO Auto-generated method stub
-		return Global.INT_SIZE + Global.LONG_SIZE;
+		return Global.INT_SIZE + address.size();
 	}
 	
 	@Override

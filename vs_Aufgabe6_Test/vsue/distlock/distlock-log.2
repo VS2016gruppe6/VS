@@ -1,0 +1,35 @@
+Jul 13, 2016 8:36:27 PM org.jgroups.stack.Configurator resolveAndAssignField
+WARNING: JGRP000014: BasicTCP.use_send_queues has been deprecated: will be removed in 4.0
+Jul 13, 2016 8:36:27 PM org.jgroups.stack.Configurator resolveAndAssignField
+WARNING: JGRP000014: TP.enable_bundling has been deprecated: will be ignored as bundling is on by default
+Jul 13, 2016 8:36:27 PM org.jgroups.stack.Configurator resolveAndAssignField
+WARNING: JGRP000014: Discovery.timeout has been deprecated: GMS.join_timeout should be used instead
+Jul 13, 2016 8:36:27 PM org.jgroups.stack.Configurator resolveAndInvokePropertyMethod
+WARNING: JGRP000014: UNICAST.setTimeout has been deprecated: not used anymore
+Exception in thread "main" java.lang.NoClassDefFoundError: vsue/distlock/FIFOUnicast$SimulatedUnicastProtocolHeader
+	at java.lang.Class.getDeclaredConstructors0(Native Method)
+	at java.lang.Class.privateGetDeclaredConstructors(Class.java:2595)
+	at java.lang.Class.getConstructor0(Class.java:2895)
+	at java.lang.Class.newInstance(Class.java:354)
+	at org.jgroups.stack.Configurator.createLayer(Configurator.java:435)
+	at org.jgroups.stack.Configurator.createProtocols(Configurator.java:398)
+	at org.jgroups.stack.Configurator.setupProtocolStack(Configurator.java:90)
+	at org.jgroups.stack.Configurator.setupProtocolStack(Configurator.java:57)
+	at org.jgroups.stack.ProtocolStack.setup(ProtocolStack.java:476)
+	at org.jgroups.JChannel.init(JChannel.java:852)
+	at org.jgroups.JChannel.<init>(JChannel.java:159)
+	at org.jgroups.JChannel.<init>(JChannel.java:139)
+	at vsue.distlock.VSLockTestCases.main(VSLockTestCases.java:300)
+Caused by: java.lang.ClassNotFoundException: vsue.distlock.FIFOUnicast$SimulatedUnicastProtocolHeader
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:366)
+	at java.net.URLClassLoader$1.run(URLClassLoader.java:355)
+	at java.security.AccessController.doPrivileged(Native Method)
+	at java.net.URLClassLoader.findClass(URLClassLoader.java:354)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:425)
+	at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:308)
+	at java.lang.ClassLoader.loadClass(ClassLoader.java:358)
+	... 13 more
+Connection to faui02l closed.
+
+=== Command detached from window (Wed Jul 13 20:36:27 2016) ===
+=== Command terminated with exit status 1 (Wed Jul 13 20:36:37 2016) ===

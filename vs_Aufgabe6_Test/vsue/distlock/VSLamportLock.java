@@ -33,7 +33,7 @@ public class VSLamportLock {
 	   Message msg = new Message(null, null, lock);
 	   flag = false;
 		   try {
-			   System.out.println("send lock");
+			  // System.out.println("send lock");
 			channel.send(msg);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

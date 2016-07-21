@@ -19,7 +19,7 @@ import org.jgroups.conf.ClassConfigurator;
 
 public final class VSLockTestCases extends ReceiverAdapter {
     private static int num_members = 0;
-    private static final String CLUSTER_NAME = "gruppe999";
+    private static final String CLUSTER_NAME = "gruppe998";
     private static Address own_address;
     private static int own_id;
     private static String path_to_configs; 
@@ -45,6 +45,8 @@ public final class VSLockTestCases extends ReceiverAdapter {
 
     @Override
     public void receive(Message msg) {
+    	//test receive
+    	//System.out.println("enter receive");
 	if (! runnable.get()) return;
 
 	DataInputStream dis = new DataInputStream(new ByteArrayInputStream(
@@ -81,7 +83,7 @@ public final class VSLockTestCases extends ReceiverAdapter {
 		    break;
 
 		case 2: // Simple set
-		    //System.out.println("SET from " + msg.getSrc().toString());
+		   // System.out.println("SET from " + msg.getSrc().toString());
 		    otherval = dis.readInt();
 		    synchronized (instance) {
 			value = otherval;
